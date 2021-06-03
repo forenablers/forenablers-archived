@@ -4,9 +4,9 @@ date: "2018-08-01T23:00:00Z"
 author: "Borys Generalov"
 ---
 
- The timeout pattern is perhaps the most basic way to reveal performance issues and satisfy the SLA. Even though the request did not succeed, the client gets the response within defined SLA time span and the request can be retried. It sounds easy to implement as well. Simply set the timeout in the service client, i.e. RestClient, HttpWebRequest, HttpClient. Once the timeout exceeded, the request is aborted. Wait, but is it really so simple?
+The timeout pattern is perhaps the most basic way to reveal performance issues and satisfy the SLA. Even though an HTTP request did not succeed, a client gets a response within the defined SLA and the request can be retried. It sounds easy to implement as well. You would simply set the timeout in the service client, i.e. RestClient, HttpWebRequest, HttpClient. Once the timeout is exceeded, the request is aborted. Wait, but is it so simple?
 
-Here is the excerpt from Kibana logs of the real-world production microservice. An attempt to create parking action has timed out and the caller received an error response with 500 http status code. Then the caller retried and received the error again, this time the response with 409 http status code, saying that the item already exists.
+Here is the excerpt from Kibana logs of the real-world production microservice. An attempt to create a parking action has timed out and the caller received an error response with a 500 HTTP status code. Then the caller retried and received the error again, this time the response with 409 HTTP status code, saying that the item already exists.
 
 ![Kibana logs](./images/kibana.png)
 
@@ -17,33 +17,33 @@ The following diagram illustrates the high-level process:
 And this is a piece of code in API Gateway causing the problem:
 
 ```csharp
-_hhtpClient.Timeout = TimeSpan.FromMilliseconds(timeout);
-var response = await _httpClient.SendAsync(request);
+httpClient.Timeout = TimeSpan.FromMilliseconds(timeoutInMs);
+var response = await httpClient.SendAsync(request);
 ```
 
-Even though the request timed out, the parking action has still been created. Look what happened. The API Gateway aborted the request to Parking service once timeout exceeded, but it did not cancel it. At that moment the Parking service was waiting for the database operation to complete. You are totally right if you thought of what is known as Compensating Transaction pattern. And to make it right, we have to inform the Parking service that the operation was cancelled and we should stop processing and rollback all the actions performed (if any). And here the CancellationToken comes into play.
+So everything looks right, the http client has the timeout set. Even though the request has timed out, the parking action has still been created. Look what happened. The API Gateway aborted the request to the Parking service once timeout exceeded, but it did not cancel it. At that moment the Parking service was waiting for the database operation to complete. You are right if you thought of what is known as Compensating Transaction pattern. And to make it right, we have to inform the Parking service that the operation was canceled and we should stop processing and roll back all the actions performed (if any). And here the CancellationToken comes into play.
 
-This is what you would change at the API Gateway:
+This is what is missing in the API Gateway:
 
 ```csharp
 var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 tokenSource.CancelAfter(timeout);
-var response = await _httpClient.SendAsync(request, tokenSource.Token);
+var response = await httpClient.SendAsync(request, tokenSource.Token);
 ```
 
-And the changes on the Parking service. First we modify controller to accept the cancellation token:
+That said, we need to make sure that cancellation is propagated further. Now the changes on the Parking service. First, we modify the controller to accept the cancellation token:
 
 ```csharp
  public async Task<IHttpActionResult> CreateParkingright(CreateParkingrightRequest request, CancellationToken cancellationToken)
 {
     cancellationToken.ThrowIfCancellationRequested();
-    var parkingright = _parkingrightConverter.ToParkingrightEntity(request);
-    var parkingrightId = await _parkingrightRepository.Insert(parkingright, cancellationToken);
+    var parkingright = parkingrightConverter.ToParkingrightEntity(request);
+    var parkingrightId = await parkingrightRepository.Insert(parkingright, cancellationToken);
     ...
 }
 ```
 
-Finally, the repository is adjusted as following:
+Finally, the repository is adjusted as follows:
 
 ```csharp
 public async Task<T> Insert<T>(IModel model, object param, CancellationToken cancellationToken)
@@ -54,7 +54,7 @@ public async Task<T> Insert<T>(IModel model, object param, CancellationToken can
         using (var transaction = connection.BeginTransaction())
         {
             //NOTE: we can not use DapperExtensions here as they do not support cancellation tokens
-            var sql = _sqlGenerator.GetInsertCommandText(model);
+            var sql = sqlGenerator.GetInsertCommandText(model);
             var command = new CommandDefinition(sql, param, transaction, cancellationToken);
             result = await connection.ExecuteScalarAsync<T>(command);
             if(!cancellationToken.IsCancellationRequested)
@@ -65,4 +65,6 @@ public async Task<T> Insert<T>(IModel model, object param, CancellationToken can
 }
 ```
 
-Now, whenever the timeout exceeded, the request is cancelled, propagating the cancellation from API Gateway to the Parking service, so that it cancels the activity as well. This reduces the number of false-positive errors and provide consistent results
+Now, whenever the timeout is exceeded, the request is canceled, propagating the cancellation from API Gateway to the Parking service, so that the service cancels the activity accordingly. This reduces the number of errors, which in turn simplifies troubleshooting and provides consistent results.
+
+To recap: we've created a linked token source with custom timeout and propagated its cancellation token all the way to the downstream service and database layer. 
