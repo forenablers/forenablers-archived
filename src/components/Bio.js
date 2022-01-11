@@ -1,37 +1,58 @@
-import React from 'react'
+/**
+ * Bio component that queries for data
+ * with Gatsby's useStaticQuery component
+ *
+ * See: https://www.gatsbyjs.com/docs/use-static-query/
+ */
 
-// Import typefaces
-import 'typeface-montserrat'
-import 'typeface-merriweather'
+import * as React from "react"
+import { useStaticQuery, graphql } from "gatsby"
+import { StaticImage } from "gatsby-plugin-image"
 
-import profilePic from './profile-pic.png'
-import { rhythm } from '../utils/typography'
+const Bio = () => {
+  const data = useStaticQuery(graphql`
+    query BioQuery {
+      site {
+        siteMetadata {
+          author {
+            name
+            summary
+          }
+          social {
+            twitter
+          }
+        }
+      }
+    }
+  `)
 
-class Bio extends React.Component {
-  render() {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          marginBottom: rhythm(2.5),
-        }}
-      >
-        <img
-          src={profilePic}
-          alt={`For Enablers`}
-          style={{
-            marginRight: rhythm(1 / 2),
-            marginBottom: 0,
-            width: rhythm(2),
-            height: rhythm(2),
-          }}
-        />
+  // Set these values by editing "siteMetadata" in gatsby-config.js
+  const author = data.site.siteMetadata?.author
+  const social = data.site.siteMetadata?.social
+
+  return (
+    <div className="bio">
+      <StaticImage
+        className="bio-avatar"
+        layout="fixed"
+        formats={["auto", "webp", "avif"]}
+        src="../images/profile-pic.png"
+        width={50}
+        height={50}
+        quality={95}
+        alt="Profile picture"
+      />
+      {author?.name && (
         <p>
-          Written either by <a href="https://github.com/zavolokas"><strong>Sergey Zavoloka</strong></a> or <a href="https://github.com/bgener"><strong>Borys Generalov</strong></a>.{' '}
+          Written by <strong>{author.name}</strong> {author?.summary || null}
+          {` `}
+          <a href={`https://twitter.com/${social?.twitter || ``}`}>
+            You should follow them on Twitter
+          </a>
         </p>
-      </div>
-    )
-  }
+      )}
+    </div>
+  )
 }
 
 export default Bio
