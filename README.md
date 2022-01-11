@@ -25,10 +25,6 @@ Use the following commands to rebuild the gatsby blog in case of html/js changes
 gatsby build
 ```
 
-## Using gatsby starter template
+## Mermaid support
 
-Gatsby starter for creating a blog
-
-Install this starter (assuming Gatsby is installed) by running from your CLI:
-
-`gatsby new gatsby-blog https://github.com/gatsbyjs/gatsby-starter-blog`
+There is installed Mermaid plugin that allows to draw diagramms, flow charts etc. Check [here](https://mermaidjs.github.io/)

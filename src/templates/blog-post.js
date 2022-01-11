@@ -2,11 +2,14 @@ import React from 'react'
 import Helmet from 'react-helmet'
 import Link from 'gatsby-link'
 import get from 'lodash/get'
+import { DiscussionEmbed } from 'disqus-react'
 
 import Bio from '../components/Bio'
 import { rhythm, scale } from '../utils/typography'
 import { runFacebookJs, runTwitterJs } from '../utils/social-buttons'
 import { styles } from '../fe-styles';
+
+import 'katex/dist/katex.min.css'
 
 class BlogPostTemplate extends React.Component {
   constructor(props) {
@@ -25,6 +28,11 @@ class BlogPostTemplate extends React.Component {
     const siteTitle = get(this.props, 'data.site.siteMetadata.title');
     const { previous, next } = this.props.pathContext;
     const blogPostUrl = post.frontmatter.postUrl;
+    const disqusShortname = "forenablers.disqus.com";
+    const disqusConfig = {
+      identifier: post.id,
+      title: post.frontmatter.title,
+    };
 
     return (
       <div>
@@ -93,6 +101,7 @@ class BlogPostTemplate extends React.Component {
             </li>
           )}
         </ul>
+        <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
       </div>
     )
   }
