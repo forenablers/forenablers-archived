@@ -1,0 +1,1996 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 12 Jan 2022 16:22:28 GMT</lastBuildDate><item><title><![CDATA[Machine Learning and Parking Availability]]></title><description><![CDATA[Do you have a lot of data that you were collecting many years and now you consider doing some magic by applying Machine Learning? What are…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/pn-hackathon-2018/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/pn-hackathon-2018/</guid><pubDate>Wed, 05 Sep 2018 10:45:00 GMT</pubDate><content:encoded>&lt;p&gt;Do you have a lot of data that you were collecting many years and now you consider doing some magic by applying Machine Learning? What are you able to achieve with the data you have?&lt;/p&gt;
+&lt;p&gt;In this post I’ll summarize our experience of trying to apply Machine Learning during the &lt;a href=&quot;/hackathon-availability/&quot;&gt;hackathon&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In the beginning we will take a look at the problem. After that there will be a small refresher/introduction into Machine Learning and its methods. Then we choose an appropriate method that supposed to solve the problem. Once we know the method, we will figure out what data do we need and what data are actually available. In the end as a bonus, we will consider slightly different approach and will reason about it’s pros &amp;#x26; cons.&lt;/p&gt;
+&lt;h2&gt;Problem&lt;/h2&gt;
+&lt;p&gt;During the hackathon we tackled a &lt;strong&gt;parking availability&lt;/strong&gt; problem that was stated as follows:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As a customer I want to search for parking in a specific area and get insight if there are spaces available? Show our customers parking prediction per street/area using our transaction history.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The first solution that popped up in our technology driven minds was Machine Learning.&lt;/p&gt;
+&lt;h2&gt;Machine Learning&lt;/h2&gt;
+&lt;p&gt;What do we know about Machine Learning?&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Machine learning is like teenage sex: everyone talks about it, nobody really knows how to do it, everyone thinks everyone else is doing it, so everyone claims they are doing it..&lt;/p&gt;
+&lt;p&gt;(c) Someone smart and funny&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;What we want essentially is that our program learns how to solve a problem &lt;strong&gt;itself&lt;/strong&gt; by discovering hidden patterns in the training data set.&lt;/p&gt;
+&lt;p&gt;There are following types of learning methods available to solve different types of problems:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Supervised learning for predictions and classifications&lt;/li&gt;
+&lt;li&gt;Unsupervised learning for clustering and associations&lt;/li&gt;
+&lt;li&gt;Reinforcement learning for learning from experiments&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What these methods do is train &lt;em&gt;a model&lt;/em&gt; that can either predict, classify, associate etc. In other words &lt;strong&gt;the model is an outcome of a learning process&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;As we can see above, to be able to make predictions about parking availability we need to utilize supervised learning to train our model.&lt;/p&gt;
+&lt;h2&gt;Supervised learning&lt;/h2&gt;
+&lt;p&gt;How does the supervised learning works? In supervise learning we perform following steps to train our model:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;initialize a model with random parameters&lt;/li&gt;
+&lt;li&gt;ask model to make predictions based on an input data&lt;/li&gt;
+&lt;li&gt;evaluate the prediction based on &lt;strong&gt;known output&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;adjusts model’s parameters to minimize the error&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The key point is that &lt;strong&gt;we must know the prediction(output) for each input&lt;/strong&gt; in the training data set. This paired data of &lt;em&gt;inputs and results&lt;/em&gt; is named &lt;strong&gt;labeled&lt;/strong&gt; data.&lt;/p&gt;
+&lt;p&gt;The classical example of labeled data for supervised learning is a data set of labeled images with dogs and cats. We know who is pictured on each image: a cat or a dog.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b3c0a3acb51b96da704cb63ec641e860/8608d/casndogs.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAECBf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAdxOSyg//8QAGRABAAIDAAAAAAAAAAAAAAAAAQACEBJB/9oACAEBAAEFAu4s6wVJ/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAGBAAAwEBAAAAAAAAAAAAAAAAABARMWH/2gAIAQEABj8CNVLnF//EABwQAQABBAMAAAAAAAAAAAAAAAEAESExUWGB0f/aAAgBAQABPyFvmncbPqFdkoHLiGaFO2IT/9oADAMBAAIAAwAAABCAD//EABURAQEAAAAAAAAAAAAAAAAAAAAR/9oACAEDAQE/EEf/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/ED//xAAbEAEBAQEBAAMAAAAAAAAAAAABEQAhMUFhcf/aAAgBAQABPxDoOSeDJgOHtOUwSfK91nEBYlfrK4hWL+LMGdW7/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Cats &amp;amp; Dogs&quot;
+        title=&quot;Cats &amp;amp; Dogs&quot;
+        src=&quot;/static/b3c0a3acb51b96da704cb63ec641e860/828fb/casndogs.jpg&quot;
+        srcset=&quot;/static/b3c0a3acb51b96da704cb63ec641e860/ff44c/casndogs.jpg 158w,
+/static/b3c0a3acb51b96da704cb63ec641e860/a6688/casndogs.jpg 315w,
+/static/b3c0a3acb51b96da704cb63ec641e860/828fb/casndogs.jpg 630w,
+/static/b3c0a3acb51b96da704cb63ec641e860/8608d/casndogs.jpg 638w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The knowledge of the output allows us to train the model in supervised manner.&lt;/p&gt;
+&lt;h2&gt;Parking Availability Training Data Set&lt;/h2&gt;
+&lt;p&gt;Now let’s try to answer the question - &lt;strong&gt;how our training data set should look like so that we could predict parking availability?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The output data&lt;/strong&gt; should be either &lt;em&gt;parking is available&lt;/em&gt; or &lt;em&gt;unavailable&lt;/em&gt;. It can have different forms of course - binary(yes, no), or probability of availability(87% is available), or something else.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The input data&lt;/strong&gt; should have features that influence parking availability.&lt;/p&gt;
+&lt;p&gt;Desired data set could look like this:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;input &lt;br /&gt; curLat, curLon, destLat, destLon, day, minute&lt;/th&gt;
+&lt;th&gt;label (output) &lt;br /&gt; availability&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485772, 5.0082082, 52.356612, 4.895434, 244, 772&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#0a0&quot;&gt;true&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485241, 5.0082011, 52.356278, 4.995423, 345, 631&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#0a0&quot;&gt;true&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485789, 5.0082022, 52.353972, 4.995412, 134, 1083&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#f00&quot;&gt;false&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3489271, 5.0082082, 52.356129, 4.993729, 245, 890&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#f00&quot;&gt;false&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485772, 5.0082090, 52.356605, 4.995392, 64, 402&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#0a0&quot;&gt;true&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Important part of the data set is the availability &lt;strong&gt;labels&lt;/strong&gt;. The labels reflect the availability situation whether the parking was available(&lt;span style=&quot;color:#0a0&quot;&gt;true&lt;/span&gt;) or unavailable(&lt;span style=&quot;color:#f00&quot;&gt;false&lt;/span&gt;) at the given time in the given location.&lt;/p&gt;
+&lt;p&gt;Do we have these labels in provided data set?&lt;/p&gt;
+&lt;h2&gt;Cashless Parking Providers and data&lt;/h2&gt;
+&lt;p&gt;What data do we have in reality? As the problem states - we need to give a prediction based on &lt;strong&gt;transaction history&lt;/strong&gt;. These transaction history comes from a cashless parking provider(CPP) and basically are payments for parking in a particular zone at particular time.&lt;/p&gt;
+&lt;p&gt;Clients of CPP use the provided services once they are parked and want to pay for the parking. Therefore CPP receives transactions only for successful parking - &lt;em&gt;client managed to park in a particular area, thus parking was available&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;What data we don’t have is the data about &lt;strong&gt;unsuccessful parkings&lt;/strong&gt; because we don’t know where the client wanted to park &lt;strong&gt;initially&lt;/strong&gt;. It is possible that the client wanted to park in one place but it was completely full so he ended up parking in another place far away from the initial destination point. In other words - client dealt with &lt;strong&gt;unavailable parking&lt;/strong&gt; but this data &lt;strong&gt;was not captured&lt;/strong&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Disclosure: all the data is anonymized according to the &lt;a href=&quot;https://eugdpr.org/&quot;&gt;GDPR&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;The conclusion is that the &lt;strong&gt;transactions cannot be used as labeled training data set&lt;/strong&gt; to train a model to predict parking availability.&lt;/p&gt;
+&lt;p&gt;Main outcome was that the CPP should start collecting feedback from the users with regard to the parking experience. Simple questions can be asked after user parked:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Have you parked where you initially wanted?&lt;/li&gt;
+&lt;li&gt;How long did it take to park?&lt;/li&gt;
+&lt;li&gt;Do you see more available parking spots nearby?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This feedback will allow building labeled training data set that will not depend on city specifics.&lt;/p&gt;
+&lt;h2&gt;Bonus&lt;/h2&gt;
+&lt;h3&gt;Availability = Amount of Free Spots?&lt;/h3&gt;
+&lt;p&gt;Can we derive availability from the amount of free parking spots? Whenever we can say that there will be &lt;code class=&quot;language-text&quot;&gt;X&lt;/code&gt; parking spots free, we can say that parking in the area is available.&lt;/p&gt;
+&lt;p&gt;In order to train our model to predict amount of free parking spots, our desired labeled training data set should look like:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;input &lt;br /&gt; curLat, curLon, destLat, destLon, day, minute&lt;/th&gt;
+&lt;th&gt;label (output) &lt;br /&gt; amount of free parking spots&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485772, 5.0082082, 52.356612, 4.895434, 244, 772&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#0a0&quot;&gt;23&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485241, 5.0082011, 52.356278, 4.995423, 345, 631&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#0a0&quot;&gt;68&lt;span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485789, 5.0082022, 52.353972, 4.995412, 134, 1083&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#f00&quot;&gt;0&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3489271, 5.0082082, 52.356129, 4.993729, 245, 890&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#f00&quot;&gt;0&lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code class=&quot;language-text&quot;&gt;52.3485772, 5.0082090, 52.356605, 4.995392, 64, 402&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span style=&quot;color:#0a0&quot;&gt;45&lt;span&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;In order to label the data we should know amount of free parking spots. The math here is pretty simple:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Estimate a $$Capacity$$ of the parking area. As the capacity we can consider a historical maximum amount of simultaneous parking transactions at the area.&lt;/li&gt;
+&lt;li&gt;Amount of $$Occupied$$ spots is amount of simultanious transactions for a given time and location.&lt;/li&gt;
+&lt;li&gt;$$Free = Capacity - Occupied$$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Accuracy of Free spots prediction&lt;/h3&gt;
+&lt;p&gt;The accuracy of such model will depend on several factors and will vary per city.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Do we have all transactions in a City?&lt;/strong&gt; If we don’t we cannot estimate a capacity of a parking location and how many spots are occupied.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Does enforcement work good?&lt;/strong&gt; In worse case (when there is no enforcement)drivers won’t pay for parking. This will lead to situation where we see that there are 5 free parking spots, however they are occupied without paying.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Transactions reflect exact parking duration?&lt;/strong&gt; There are cases when driver buys 20 minutes to park but leaves after 10 minutes. In couple minutes this spot gets occupied by another car that also creates a transaction. That can influence our estimations of parking space capacity by making it bigger.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Are there special tariffs?&lt;/strong&gt; In a case when residents don’t pay for the parking they will occupy a spot but it will not create a transaction. In residential area we will see many free spots that are occupied by residents in reality.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mermaid&quot;&gt;&lt;pre class=&quot;language-mermaid&quot;&gt;&lt;code class=&quot;language-mermaid&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;graph&lt;/span&gt; TD
+    start &lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt; K&lt;span class=&quot;token text string&quot;&gt;{Major provider?}&lt;/span&gt;
+    D&lt;span class=&quot;token text string&quot;&gt;{Enforced?}&lt;/span&gt; &lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt; &lt;span class=&quot;token label property&quot;&gt;|Yes|&lt;/span&gt; F&lt;span class=&quot;token text string&quot;&gt;{Buy time?}&lt;/span&gt;
+    D &lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt; &lt;span class=&quot;token label property&quot;&gt;|No|&lt;/span&gt; B
+    K &lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt; &lt;span class=&quot;token label property&quot;&gt;|No|&lt;/span&gt; B&lt;span class=&quot;token text string&quot;&gt;[Incomplete]&lt;/span&gt;
+    K &lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt; &lt;span class=&quot;token label property&quot;&gt;|Yes|&lt;/span&gt; D
+    F &lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt; &lt;span class=&quot;token label property&quot;&gt;|Yes|&lt;/span&gt; G&lt;span class=&quot;token text string&quot;&gt;[Inaccurate]&lt;/span&gt;
+    F &lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt; &lt;span class=&quot;token label property&quot;&gt;|No|&lt;/span&gt; H&lt;span class=&quot;token text string&quot;&gt;[Complete]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;It worth mentioning that attempt to predict amount of free parking spots in a parking location in Amsterdam (where we didn’t have majority of all the transactions) resulted in weird numbers that exceeded amount of historical maximum of simultaneous parking actions.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Hackathon: Parking availability]]></title><description><![CDATA[It’s been a week since our regular hackathon at Parkmobile and it’s a good time to recap and share key takeaways. The aim of the hackathon…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/hackathon-availability/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/hackathon-availability/</guid><pubDate>Tue, 14 Aug 2018 20:00:00 GMT</pubDate><content:encoded>&lt;p&gt;It’s been a week since our regular hackathon at Parkmobile and it’s a good time to recap and share key takeaways. The aim of the hackathon was to find innovative solutions that improve the life of drivers dealing with the parking challenges. I teamed up with a few like-minded people and we focused on Parking Availability challenge. Here I am going to deep-dive into the availability problem and share our findings.&lt;/p&gt;
+&lt;h3&gt;The challenge&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As a customer I want to search for parking in a specific area and get insight if there are spaces available? So show our customers parking prediction per street/area using our transaction history.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Naive approach&lt;/h3&gt;
+&lt;p&gt;The first reaction was, not surprisingly … Machine Learning. And here we go: people started to argue whether it should be TensorFlow or AWS SageMaker, should we use the data from Amsterdam or from Paris, how accurate must be the prediction and so on and so forth. People that do not have hands-on experience with the data science or machine learning, those suddenly turned into experts and started to show off their intelligence :) Tell you what, the Machine Learning is as useless here as blockchain. Never start from the technology!&lt;/p&gt;
+&lt;details&gt;&lt;summary&gt;Explanation&lt;/summary&gt;
+&lt;p&gt;
+At the minimum you are coupled to this exact technology and limited due to all the constrains that come with the chosen technology. Moreover, there is no unique selling point when you rely on technology. Your competitors will do the same, i.e. adopt the same technology and you all end up with the same results. Take cryptocurrency for example, they all based on blockchain and there is more than 1600 of them, whereas only 5-10 of them are really worth to invest.
+&lt;/p&gt;
+&lt;/details&gt;
+&lt;h3&gt;Right approach&lt;/h3&gt;
+&lt;p&gt;We returned to the drawing board. This time we focus on the most important thing: &lt;strong&gt;what&lt;/strong&gt; we are trying to solve, rather than &lt;strong&gt;how&lt;/strong&gt;. And immediately an excellent question popped up: are we reinventing the wheel, i.e. is there an existing solution on a market? The research resulted in the following three  approaches for addressing the parking availability:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Heatmap with colors indicating the occupancy on the street level, e.g. Parkmobile US:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 231px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/0cc5a76ae619783821f0399947e581c3/6e622/parkmobile.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 126.58227848101265%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAZCAYAAAAxFw7TAAAACXBIWXMAAAsTAAALEwEAmpwYAAAGpklEQVQ4y02VXUxb5xnHj7TebHeb+qFq0rRNwTYf+WiWQHPT7qaadrOLadW6i05a0tA1XaOpF+3UtJW2ZWmaD/JRgklpTAADSYDQAAEChI8Ajo0xibGxOfbxsX18fL58/AWEQOzz/DfsXOzi0fNcvPrp97z/V3qZv/z56O9+9otX8Vb9izhyzkSHG36JH/2EAcP8f70AhvnB87ncX/ghg8NnzKhvqKLf/30Xfm56Fe+8/e47TI35wMPffPAy7mz89llv/G3cVN+iY5crqeb1F+m1N1+ivW+8RHvffKVUe954mfb9+hUyHfgxvftPC/Vrf6TexJ9ono4X/vDZT1Ftfs3HmE1V4b9drIWwyRp+kaWgzBKfjxC/xiGUDVNig8daUcRaIVHuRZE2KIn1okjpJwL52AVajo/j429rixZzZYIx7bIEjp7Zjdg2byyJUfIqPBZFDo8TPJzxMIKpOLaNDDYLaTwppLG+ncLalobcpoItZBHkfBQQH+BY026ymCvjzJ7d+5InG99HGlPEZwconh8EmxvAbL4N/sz38Ev9mOC6MRnuxkK0G8vqIEL5MXBrEwimh7Cq36FldQSnm48aFkuVwBw6dGjzwlencW9ghIb7B8g5PYN7d0bQdNeOfs8I+rqGcKd/FEMD4+hq78Gi04up8TlMTzgwc9+Be4Oj5Lw/gZ7rV43KykqBqa6pYU9+8TGOf/SBUf9+Pf3n1El8dPw4jn34V5xqOoX36o/g0sUL+PrMVzhy5DAaLpzHp//4BOfOn8XO2S++/JxOfP4ZLl84ZdTU1AjMnj17ldbmcyisxUkMLxDPs0gEg3jqXsJqfBKXfVfgCi1AiicR5sIQRRGCEEcsFkeQDcEfCNLW1hb19PSSyWSKMbV1r2/Zms8CSFE+FaF8Jg3yBiAExuBJdWJYbIMtaoegichkclBVGbquQ0omkJFZJEWesmsbaO/oKOzbty/HHKyt27RZzwJFhVQ1SZvBEMS5e3BKnXBJdrilDgwKnUimItAlAY+W/XC5XHDPTyP4yIFV7zzl9AQam6zbdXV1BlNVXS00X/kGZGzQuhCndYcDi1w3XGoH3FInFqQOeJRbSIgDeBoehs8xismhQayEh/GAa0TAO0MbKQ5t1y5tH6ytLTD79+/PWpubQdtbVPT4SIxMwZPqg1vqgkvqwIJcNnUkr4MTe5Fd7kZithtRcRQzsXPY0AKEooY+u3UHWGRq6+q2bNdbASVF+tI0OeUuLMrd8Krfl8xcUjvc0g145D44ZDuW5dvICSNYC9yFEppDXmUJzxTY2i8923/gwDbzq9qD69+dPg1wHPlD39C0cr5ktGP2SOmDV+3DvNiLsehdTMaGcD8+hEF+DHOhKRQiA8iz07T+NIYT9i+NKkuVyFRYLKGOf/8L0LPGIj9Mc95TCPtb4BJb8VC2wyPfLNkuyrfKV1AKqxNzUidWkreQ40fIuTmHT1o/pWpzlcBUVFSwV8+eQaFQMFJ6npREDOngBLTVDvgS1+FU7XArXXis3C4ZL+zYSzuB2eGW7RhMtNL401lYbU1GpbmyDLRevYpCoWgEltwUi0YRiwtIBuaRWu6C39+E2WgrnIodS/Ktkq1b7sai3Ilp0QZr0EqRjBedtmtGhdn0HGi1olg0jKX5GQoF/IhwEYQ5HrGwH5LnNtJhOx6JrXDIHXDLXeXA5JuwhZswFBojPMmgx37FMJstZWBLSwsAGNlcnrK5HFIpDZqmQk/riIoaGoZFZFZvIxS1wSmV3+eQ1I7e+AD8vI/UTAg32q4YFksJaGIbGs6jWCgauq6ToshYiSxhJeJBKLaM+ZUJ9LseQo0H8YQdRYT/DjOyFTfETnh5Fg62nbwbjc+BlQJjNpvYM6fPgZcfGzPJsyQoq9C1DGRFQjqVxXSgB+GEE3o6D11SsBq5hdvCCdyPTkHgJSz775GiT6HP/q1hNpvLKzddsULPisaY7yKFIitQlZ2VNaiqCk1LQVV3ZgWZVBbjiUlc99mw9Hi5VJFIjJ7lFdxsu2SYd1beVbGLbWm6iuhTwRgPTVMiLoJlWYiJBFKpVAms7MDUDLyyF22xbjzifOACASwsuPBwwUNpXUFna3M5FIvJwl5o/BqD+WHDIT4kTU6Bj8XAcRyiUb5kpms64kocXUIP7nOziK2uwr/4AAK7iBi7SKosovVaSzmUalMVW3/pPTzYmDO0pEYZXUNKUyFLEnieRyjEIq1mMKnOoCd2B5Ewh8CSA0HPLLJJPza1FXqWi6LxcoNh+d8X8F9DNfUO7CImGgAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Parkmobile US&quot;
+        title=&quot;Parkmobile US&quot;
+        src=&quot;/static/0cc5a76ae619783821f0399947e581c3/6e622/parkmobile.png&quot;
+        srcset=&quot;/static/0cc5a76ae619783821f0399947e581c3/c26ae/parkmobile.png 158w,
+/static/0cc5a76ae619783821f0399947e581c3/6e622/parkmobile.png 231w&quot;
+        sizes=&quot;(max-width: 231px) 100vw, 231px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Indication of how busy is the area, e.g. Google Maps:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 580px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/9e300d5f77b992f54f4dd3d12fddcd3f/b6272/googlemaps.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAAA7CAAAOwgEVKEqAAAADFUlEQVQ4y2WT20okVxSG68KL8SF8Jd/Cd5BpQQQDgVxl7pJAhjBggibMwIAJaR0xmSEeutWOtofqk3Wu2lXVXd1tV3Udv9Dl6IyZBT/stfbmY/2staUwCunqN/SMFo4jCPqCq55g59Tng/yerfrfqFafy8sGPd1i0O9juQqqJSOEw3g8Ji9yZlEUBdJ0OmXQ9xh5KmqvzU3znMZ5k8MLEz+wMF2VwHMI1CNMrYt+K2MbGpZpY9v2PTD/DBhFEbpmonWusZVjAnFOW3HYa3hMAxvfMRDCwOk1EELgmW2EY+M6OsIxubu7m6FKWAm8C0c0OwfousbLqsVXb0Z894fH3kkHRz9HKE18p4V+fYTn+wxcA89zGXiCvnA+AvkEHE4Sfm+eoIsr3h6O+WlvzIu3gl93j1GtNletDoqi4msXDFwbxbimZ/6LED5O4DP6CHzoUrqLUl7VYOfKIgtd+k6Pf45r/HbkI7/bZ9A4ptnpYnZqjJwuV40qundNoDr0/6wx0U2yPC1h3AMTNuo5Lw8LPrSnyO0O12d73CgqjVff8/qbF8itUxzjFlu7wTV7qKqK21Zwf9nDa94Q6BZJnFAA0jhK+fkk54cD2Dor8FyHMLAQyjnNw3ccVF8z1OtoqoKq6qW5KZA9qCjI0owiL8ppS+MwYaOW8eNBwdZJylnb40T2MG6PUE6PGfx1SHB5hl47xVV1ojgmPKsT3nZJspwoDJmtXpqmJVRKkhRnOMUIQpxRjOpG6H6C3w+IXUE8DInDiEkwxLYsFMPA/fZrzDdbGH6fdkum1WqV+zgLKc8yRpMhTUumJbq4jokQFqLXwTt4j25bjEYjZvs6DALiOCGNY4o8vx/EZ1Faftzy/KH46VGUpPw/ZtaE6yLLcqksyx5hpeXhcMj6+jrLy8usrKywurpKpVKh8vw5K5UKa2trZX2m2ZvZ3cXFxRedPTQmmaaJJEmPevbs2ZN8fn7+ST43N8fCwgKLi4ssLS1Rr9cfoSVwMpmwv7/Pzs5OqWq1+nieaXd394t8e3ubzc1NNjY20DTtydf7D0+zHiAugovDAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Google maps&quot;
+        title=&quot;Google maps&quot;
+        src=&quot;/static/9e300d5f77b992f54f4dd3d12fddcd3f/b6272/googlemaps.png&quot;
+        srcset=&quot;/static/9e300d5f77b992f54f4dd3d12fddcd3f/c26ae/googlemaps.png 158w,
+/static/9e300d5f77b992f54f4dd3d12fddcd3f/6bdcf/googlemaps.png 315w,
+/static/9e300d5f77b992f54f4dd3d12fddcd3f/b6272/googlemaps.png 580w&quot;
+        sizes=&quot;(max-width: 580px) 100vw, 580px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Exact number showing the available parking spots, e.g. ParkMe:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/4c6bdc7c6c70ff39de4b36e1a3b33d59/3fe45/parkme.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 51.89873417721519%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAA7CAAAOwgEVKEqAAAACSklEQVQoz02RyWsUQRSH+38URD15Ej2IKF4UvQmKYA6CgqK4YM7uuEeJSYxm4iSSyURHM3GmJ71Mb9VV1cv08sl0FHzw49W7fHzvlXHsxgrnZtc5cavFkeufOT+7xusvPR5/7PD26w7zGxZLmxbXnm6w7/ICh2aWODizyMGm/8siB67sxZhr9Zhf3WLmtc3+uwH3Fxw+bdq8X7f42LGZ77i0vtt0+zadvstm36W7M256Z9tp3t3+37nvYNxbyTj9NOP4w4TjjzIuvku59E5z4U3CmeeaU08SHiyHCM+iyFK0jAj9MVoKJllCkSUI5THJNHmiMHrfPrHWXmVr28RyxgysMQPbp9sbsL61Tbvb5/fIJfB9lFR44zEjc8AkT5nWpCgZ+iYiFsQixihXrpL8eIVpubiOTRQGFJMc6oqiKIiTEtd1icIQFcfEsWLgKlxZI7OKuszJlEJJ2cRAWehgF8vaJdGaNM0aUA3Udd1YmKaJ7/loGePFOYu/chZ+ZbT6MVaY4YicNE2RcYxRtW+ienMMLRdrd4TneSTJ3jpFWSGzKXCE7/sUqWR5O+HkY83luZybS3D2Rcr5lylepNBTw1r8RvsmjuswyXPKsqSqqsZuCswKGJojgiBAK4UXhkRezrOdtxxePoplBYwDgRASKWyM6ttd9M8POJ5AxoK8gVbThZmUNSKF4XCE742RsSSKAnQgadst7ny/TR4nze2mMBW0MdAuSeQ0Pxf4XgP83zAv9wzDqaHWzZ2EEGiRUMgC3w+QkYMK1pCRyR/IWNQ2bIU4rwAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Parkme&quot;
+        title=&quot;Parkme&quot;
+        src=&quot;/static/4c6bdc7c6c70ff39de4b36e1a3b33d59/f058b/parkme.png&quot;
+        srcset=&quot;/static/4c6bdc7c6c70ff39de4b36e1a3b33d59/c26ae/parkme.png 158w,
+/static/4c6bdc7c6c70ff39de4b36e1a3b33d59/6bdcf/parkme.png 315w,
+/static/4c6bdc7c6c70ff39de4b36e1a3b33d59/f058b/parkme.png 630w,
+/static/4c6bdc7c6c70ff39de4b36e1a3b33d59/3fe45/parkme.png 699w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;We quickly figured out that these existing approaches are not solving the &lt;strong&gt;availability&lt;/strong&gt; problem as we expected. They rather give you an insight on what’s going on in realtime and show you the occupancy of certain street. We do not want to know the exact number nor the color of the street. Finally, we worked out the &lt;strong&gt;what&lt;/strong&gt; :&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Whether or not the users can park in target area. If not, where can they park?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;User stories&lt;/h3&gt;
+&lt;p&gt;The first step is to understand your target users and customers. We used Personas and tried to imagine the most important types of user.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Clearly, parking is different when you drive luxurious 5 meter long BMW 5 Series vs Smart Fortwo. The chances to park your Smart are much higher, you will fit into impossibly small gaps.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;It does matter whether you are experienced driver or a rookie. A rookie will avoid the parallel parking in narrow area. An experienced driver does not mind parallel park by touch (aka Paris style)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Contrary what if you are a rookie, but driving BMW i3 that has brilliant self-parking feature (Intelligent Parking Assist System)? You do not care about parking complexity anymore&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;How about parents with the baby? Probably you are not very excited to park and walk 15 minutes with the stroller&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;However, the student does not mind to park in cheaper place and the walk 15 minutes to the target destination&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Finally, are you by any chance driving an electric vehicle that needs to be charged? Or are you using the car sharing services, so you are limited in where you can leave the car?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Edge cases&lt;/h3&gt;
+&lt;p&gt;There are many things that will affect the accuracy of the results, here are the most annoying:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The parking lot seems to be vacant, but it is too narrow to park there. E.g. someone parked the car inappropriately:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/e0dacb9bdf0e826dc4e426c27b290c82/idiot.gif&quot; alt=&quot;Parking idiot&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The parking is on grass or field (usually concerts, P+R), so if there is a heavy rain you will need to walk through mud:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/2621feeebdcb84b1f152a2a66ad37e40/ee25b/parkingrain.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 55.69620253164557%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABAABA//EABUBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIQAxAAAAFegUPGTTX/xAAaEAADAAMBAAAAAAAAAAAAAAAAAQIREiEx/9oACAEBAAEFApiUaDjuWobK9//EABYRAAMAAAAAAAAAAAAAAAAAAAEQIf/aAAgBAwEBPwEVf//EABYRAAMAAAAAAAAAAAAAAAAAAAEQIf/aAAgBAgEBPwExf//EABoQAQABBQAAAAAAAAAAAAAAAAAxARAhIjL/2gAIAQEABj8C5a4SlS3/xAAbEAACAwADAAAAAAAAAAAAAAAAAREhQTFRgf/aAAgBAQABPyFY3PxjWcCS0DiWQ5UeladH/9oADAMBAAIAAwAAABA3D//EABcRAAMBAAAAAAAAAAAAAAAAAAABESH/2gAIAQMBAT8QyrIj/8QAFhEBAQEAAAAAAAAAAAAAAAAAAREA/9oACAECAQE/EDcNXf/EAB0QAQACAgIDAAAAAAAAAAAAAAEAESFBMWFRkcH/2gAIAQEAAT8QeiC4Of0y4SeO0R7bho2NmfrB5Ys3FkgtHsgrMCk//9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Parking rain&quot;
+        title=&quot;Parking rain&quot;
+        src=&quot;/static/2621feeebdcb84b1f152a2a66ad37e40/828fb/parkingrain.jpg&quot;
+        srcset=&quot;/static/2621feeebdcb84b1f152a2a66ad37e40/ff44c/parkingrain.jpg 158w,
+/static/2621feeebdcb84b1f152a2a66ad37e40/a6688/parkingrain.jpg 315w,
+/static/2621feeebdcb84b1f152a2a66ad37e40/828fb/parkingrain.jpg 630w,
+/static/2621feeebdcb84b1f152a2a66ad37e40/ee25b/parkingrain.jpg 759w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How can you detect the following illegal parking? You can not trust the real-time occupancy, which reports 4 vacant parking spots&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 458px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/d5fb2f76d163dc0fc890829bbd9bbbe8/f7c3c/illegalparking.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 70.25316455696203%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAOABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAMCBAX/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAZszwaVy5//EABkQAQADAQEAAAAAAAAAAAAAAAEAAhESE//aAAgBAQABBQIcFqy+Fms85yT/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAbEAACAgMBAAAAAAAAAAAAAAAAARFBAhASMf/aAAgBAQAGPwLFdUymeyTv/8QAGhABAAMBAQEAAAAAAAAAAAAAAQARITFhcf/aAAgBAQABPyE+oLBb2dN9rjycJrQE9YEu9Psq5c//2gAMAwEAAgADAAAAEOPf/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oACAEDAQE/EGR//8QAFxEBAAMAAAAAAAAAAAAAAAAAAAERUf/aAAgBAgEBPxBc6//EAB0QAQEAAgEFAAAAAAAAAAAAAAERACExUWGBkdH/2gAIAQEAAT8QjENA9gbiKQOABA42Os4hENoz1hFMW1GvjAk1TRVxVETpT5n/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Illegal parking&quot;
+        title=&quot;Illegal parking&quot;
+        src=&quot;/static/d5fb2f76d163dc0fc890829bbd9bbbe8/f7c3c/illegalparking.jpg&quot;
+        srcset=&quot;/static/d5fb2f76d163dc0fc890829bbd9bbbe8/ff44c/illegalparking.jpg 158w,
+/static/d5fb2f76d163dc0fc890829bbd9bbbe8/a6688/illegalparking.jpg 315w,
+/static/d5fb2f76d163dc0fc890829bbd9bbbe8/f7c3c/illegalparking.jpg 458w&quot;
+        sizes=&quot;(max-width: 458px) 100vw, 458px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h3&gt;Deep Analysis&lt;/h3&gt;
+&lt;p&gt;We know what we want to solve, we identified the target audience and highlighted the edge cases. Having analyzed all the data we tried to imagine the user interface. We had to take into account a few more very important things that affected technical solution:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;There is a very busy street that is always occupied at 100%, but it is very dynamic and cars constanly come and leave. Parking time is 5-15 minutes. Hence, the parking is relatively easy and available. This brings us to important metric &lt;strong&gt;parking duration&lt;/strong&gt; and &lt;strong&gt;waiting time&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Opposite situation. At the given moment the street is half busy. However, parking duration is long, e.g. whole working day. Hence, if you came there at 08:50 AM and there were 10 parking spots available, at 09:00AM all of them will be taken and they will be free starting from 05:00PM. The parking is very difficult there and depends on &lt;strong&gt;time of the day&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Consider scenario when there are a few parking spots available and you do not know if you should take the first one or drive further hoping that there is better spot closer to your target. It will be very frustrating if remaining parking spots are at the end of the street, whereas you skipped the one at the beginning of the street, right? It would be great if our tool is able to figure out this and &lt;strong&gt;recommend you the best parking spot&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;User data&lt;/h3&gt;
+&lt;p&gt;Very soon we understood that proper solution must take the user’s preferences into account. We need to know the original intention of the user in order to say ‘Hey, go and park here, this is the best parking spot that suits you’. The intention is a key here. The user wanted to park somewhere else, but could not. We think it is important information. If people can not park there, we should adjust the recommendation and do not send others there.&lt;/p&gt;
+&lt;p&gt;Now, if we start collecting the users’ feedback, we will greatly improve the accuracy and solve the issues caused by the edge cases. Is there a free spot next to you? This would confirm that our prediction is correct, otherwise we adjust it. Was it easy to find parking lot here? If we predicted “easy to moderate” and the user says “hard” - we need to adjust our model. Was it convenient to park here or you would rather park somewhere else? Having the preferences and feedback we can recommend ‘best matches’ and the user does not need to waste time checking how many parking spots are available and then checking Google Maps to see the occupancy of an area and/or how to get to the desired location from parking place.&lt;/p&gt;
+&lt;h3&gt;Solution&lt;/h3&gt;
+&lt;p&gt;The solution consists of the two parts. First part is for the users who is going to park and want to see the situation before they drive there. The second part is targeting the users who can provide feedback upon arriving at parking place or leaving it.  We will discuss the solution in depth in the next blog post. Below is the screenshot from the working app at the end of hackathon:&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/74aa7dac4fab8f0a15cefd5fb2fc97cd/ef3e1/solution.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 57.59493670886076%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAMCAYAAABiDJ37AAAACXBIWXMAAA7CAAAOwgEVKEqAAAACiElEQVQozzWQTY/kNABE8/9ve+JPcEIrwQGBBAIhdsTCzoym2Z5OJx0ncRw7jh3H6Xw+NCPxTnV6Vapk9JZTE3B+YN1WwryzrQvzur3nfVsZ4kzvA9Y5QhgwuqaRObKSiLbj42Xhh/TOn/VMclKeixpZ7pHRe9pGYjuLtRatNV3X0dsOow3HcTDGgVLmPIkLF1lwkpFnOfGljvyTaZKHeiK8Nd/vjGWJyK6UbfsuuwfP/X5nnmdijBwHxGhwLmMMBb/dPN+nK6NvaRvBJRckX+WAsp7ULMz7Rmg00/OZRml+zxzKWLZ15X/G0RCHlKw1fPd1oTKGKSi063G+I7G246mKCLeyrTP7PDPbQJxX/HKwrivbtrLv+7vQDIYfU8GrVKRNgVAZf5SSJxmwVpM81pq/qxE3BOZl4dg3rl8EVzmyrRvjvLFsB8exwwFmdHx86XgpJL3JaFqB6Dx5Y3gUjuRBDlxbhxs8bye5EKmvDbdri7hpSulo+/jmemeZBqKrUCZH1DeeS03Re5gNp2YgOes71o8M3hGnmWma6OOdfY1EdgrXo4cek6fMTcU09pSqJG9uPBaCT9ecshWMwfCpWkgeC4/QHqlaLrXF+kDeRTqrGH75iXN25kkpypfPiM9/UdUNqsyxukQ0PVNbstuCfnCI7n3hhHEO3Wku7UjWev5VES8z/IcPxPSZc1eTtZZaGeZgWepvuVx/5moCwiikkfS6ZHQNydeqR8qSWlachSXTgdIExsHSRstrk/F4e+VVVOSVRDcpRWv4Nc+5KMlNSYTu6JxFdJbkpQkMvsG6llQFTk1EtI7gNINtmEKN6QpqLWlVhjx9Q1orbHAYo+g6y0PWYUyNc4r/AAoZhWioti61AAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Parking availability&quot;
+        title=&quot;Parking availability&quot;
+        src=&quot;/static/74aa7dac4fab8f0a15cefd5fb2fc97cd/f058b/solution.png&quot;
+        srcset=&quot;/static/74aa7dac4fab8f0a15cefd5fb2fc97cd/c26ae/solution.png 158w,
+/static/74aa7dac4fab8f0a15cefd5fb2fc97cd/6bdcf/solution.png 315w,
+/static/74aa7dac4fab8f0a15cefd5fb2fc97cd/f058b/solution.png 630w,
+/static/74aa7dac4fab8f0a15cefd5fb2fc97cd/ef3e1/solution.png 759w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h3&gt;Summary&lt;/h3&gt;
+&lt;p&gt;None of the existing solutions take users personal situation and preferences into account. Moreover, none of them gives the answer whether or not the user can park. All the user gets is the number or load distribution which is not enough to decide if the user is able to park or not. We did a mini-survey to understand the process of how people chose where to park. Most of us use the Google Maps to check street view and get an idea of how busy is the area. Some people go further and check the traffic and adjacent streets. Finally, people evaluate the alternate transport, e.g. getting by car to the nearest P+R and then use the public transportation. And this is what we want to change and simplify for the user.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Facebook Hackercup. 5 tips]]></title><description><![CDATA[It is always interesting to measure your skills in problem solving. One of the ways to check how good you are, is to participate in Facebook…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/facebook-hackercup2018/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/facebook-hackercup2018/</guid><pubDate>Sat, 11 Aug 2018 10:45:00 GMT</pubDate><content:encoded>&lt;p&gt;It is always interesting to measure your skills in problem solving. One of the ways to check how good you are, is to participate in Facebook Hackercup. If you consider participating next year - I’d like to share my top 5 learnings from this year.&lt;/p&gt;
+&lt;h3&gt;1. Train yourself to understand challenge quickly&lt;/h3&gt;
+&lt;p&gt;Challenges’ descriptions are huge. You have to be very attentive to get it right. After the problem is understood, it needs to be translated into a technical problem. You can train this skill using the &lt;a href=&quot;https://www.facebook.com/hackercup/past_rounds/1825579961046099/&quot;&gt;challanges from previous years&lt;/a&gt;.&lt;/p&gt;
+&lt;h3&gt;2. Solve without coding first&lt;/h3&gt;
+&lt;p&gt;Every challenge has a sample input and output. Use this information. Although it is tempting to start coding right away, try to solve it step by step on paper or on a white board. Make sure that you have the same output.&lt;/p&gt;
+&lt;p&gt;This approach will help you to see patterns or even to find a simple solution. For example here is one of the challenges:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Consider an N-degree polynomial, expressed as follows:&lt;/p&gt;
+&lt;p&gt;$$P_N * x^N + P_N-1 * x^N-1 + … + P_1 * x^1 + P_0 * x^0$$&lt;/p&gt;
+&lt;p&gt;You’d like to find all of the polynomial’s $x$ (
+all distinct real values of $x$ for which the expression evaluates to $0$).&lt;/p&gt;
+&lt;p&gt;The order of operations has been reversed: Addition ($+$) now has
+the highest precedence, followed by multiplication ($*$), followed by exponentiation (^).&lt;/p&gt;
+&lt;p&gt;Constraints: $P_N ≠ 0$&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After reading this you might think that this problem is somehow similar to &lt;a href=&quot;https://en.wikipedia.org/wiki/3SUM&quot;&gt;3-sum problem&lt;/a&gt;. However if you put it down on paper or whiteboard it will be obvious that the solution is quite simple:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The polynomial can be evaluated to $0$ when $x = 0$ and polynomial’s degree is odd.&lt;/li&gt;
+&lt;li&gt;Otherwise it cannot be evaluated to $0$.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The code in the end will be simple:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;python&quot;&gt;&lt;pre class=&quot;language-python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;calculatePolynomialInterceptions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;degree&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; degree &lt;span class=&quot;token operator&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0.0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# the only possible solution&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;# no such x&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;details&gt;&lt;summary&gt;Explanation&lt;/summary&gt;
+&lt;p&gt;
+&lt;p&gt;It might take some time to realise how a polynomial would look like after applying new operations order. Let’s start with $N=3$ and write the polynomial down:&lt;/p&gt;
+&lt;p&gt;$P_3 * x$ ^ $3 + P_2 * x$ ^ $2 + P_1 * x$ ^ $1 + P_0 * x$ ^ 0&lt;/p&gt;
+&lt;p&gt;According to the order of operations it should look as following:&lt;/p&gt;
+&lt;p&gt;$(P_3 * x)$ ^ $((3 + P_2) * x)$ ^ $((2 + P_1) * x)$ ^ $((1 + P_0) * x)$ ^ $0$&lt;/p&gt;
+&lt;p&gt;From that we can see that we have $(P_3 * x)$ as a base and the rest as an exponent. We will refer to the exponent as $a$:&lt;/p&gt;
+&lt;p&gt;$a = ((3 + P_2) * x)$ ^ $((2 + P_1) * x)$ ^ $((1 + P_0) * x)$ ^ $0$&lt;/p&gt;
+&lt;p&gt;and will get the expression:&lt;/p&gt;
+&lt;p&gt;$$P_3 * x ^ a = 0$$&lt;/p&gt;
+&lt;p&gt;Since $P_3 ≠ 0$ according to the problem description, the polynomial can be evaluated to $0$ only and only when $x = 0$ and $a ≠ 0$.&lt;/p&gt;
+&lt;p&gt;We have found the $x$ and the only thing we need to do is to make sure that $a ≠ 0$, otherwise $P_3 * 0^0 = P_3$.&lt;/p&gt;
+&lt;p&gt;Let’s take a look at $a$. Since $x = 0$, we will get:&lt;/p&gt;
+&lt;p&gt;$a = ((3 + P_2) * 0)$ ^ $((2 + P_1) * 0)$ ^ $((1 + P_0) * 0)$ ^ $0$&lt;/p&gt;
+&lt;p&gt;$a = 0$ ^ $0$ ^ $0$ ^ $0$&lt;/p&gt;
+&lt;p&gt;$a = 1$&lt;/p&gt;
+&lt;p&gt;The answer is that the &lt;em&gt;3rd-degree&lt;/em&gt; polynomial does evaluate to $0$ only and only when $x = 0$. However if it would be &lt;em&gt;2nd-degree&lt;/em&gt; polynomial, it does not evaluate to $0$ for any real value $x$:&lt;/p&gt;
+&lt;p&gt;$a = 0$ ^ $0$ ^ $0$&lt;/p&gt;
+&lt;p&gt;$a = 0$&lt;/p&gt;
+&lt;p&gt;$P_2 * x^0 = P_2 * 1 = P_2 (≠ 0)$&lt;/p&gt;
+&lt;p&gt;It turns out that the final solution of this problem is quite easy - we just need to check whether the polynomial degree is odd, and if it is so then it can be evaluated to $0$ when $x = 0$.&lt;/p&gt;
+&lt;/p&gt;
+&lt;/details&gt;
+&lt;h3&gt;3. Use brute force and improve&lt;/h3&gt;
+&lt;p&gt;Use a naive approach and solve a problem as quick as possible. Once you have a solution ask yourself following questions and try to improve these aspects if an answer is positive:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Are there bottlenecks?&lt;/li&gt;
+&lt;li&gt;Are there duplicated work?&lt;/li&gt;
+&lt;li&gt;Are there useless work?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;4. Solve and reverse engineer your thought process&lt;/h3&gt;
+&lt;p&gt;Forget about your CS skills and try to solve a problem as a human or as a small kid. Got a solution? Reverse engineer your thought process and convert it into an algorithm.&lt;/p&gt;
+&lt;p&gt;For example you are challenged:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Given &lt;a href=&quot;https://en.wikipedia.org/wiki/Tree_traversal#Pre-order_(NLR)&quot;&gt;Pre-order&lt;/a&gt; and &lt;a href=&quot;https://en.wikipedia.org/wiki/Tree_traversal#In-order_(LNR)&quot;&gt;In-order&lt;/a&gt; traversals of a tree, reconstruct the tree.&lt;/p&gt;
+&lt;p&gt;In-order: A, B, C, D, E, F, I, G, H&lt;/p&gt;
+&lt;p&gt;Pre-order: F, B, A, D, C, E, G, I, H&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;What you can try is to reconstruct the tree without thinking about algorithms, loops, recursions, stacks whatsoever.&lt;/p&gt;
+&lt;p&gt;What we know is that in pre-order the left element is the root. Let’s draw the root:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mermaid&quot;&gt;&lt;pre class=&quot;language-mermaid&quot;&gt;&lt;code class=&quot;language-mermaid&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;graph&lt;/span&gt; TD&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    F&lt;span class=&quot;token text string&quot;&gt;((F))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Next root element is &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; but where to put it - we don’t know yet. Looking at the in-order traversal result, we can notice that &lt;code class=&quot;language-text&quot;&gt;F&lt;/code&gt; splits it into two: &lt;code class=&quot;language-text&quot;&gt;A, B, C, D, E&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;I, G, H&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;These are nodes that are on the left and on the right from our root &lt;code class=&quot;language-text&quot;&gt;F&lt;/code&gt;. Which nodes are children of &lt;code class=&quot;language-text&quot;&gt;F&lt;/code&gt;? The ones that come first in the pre-order - &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;G&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mermaid&quot;&gt;&lt;pre class=&quot;language-mermaid&quot;&gt;&lt;code class=&quot;language-mermaid&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;graph&lt;/span&gt; TD&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    F&lt;span class=&quot;token text string&quot;&gt;((F))&lt;/span&gt;&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;B&lt;span class=&quot;token text string&quot;&gt;((B))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    F&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;G&lt;span class=&quot;token text string&quot;&gt;((G))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; splits the in-order &lt;code class=&quot;language-text&quot;&gt;A, B, C, D, E&lt;/code&gt; into the only left child &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; and descendant ondes on the right &lt;code class=&quot;language-text&quot;&gt;C, D, E&lt;/code&gt;. Which node is the right child of &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt;? The answer is &lt;code class=&quot;language-text&quot;&gt;D&lt;/code&gt;, since it comes first in the pre-order.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mermaid&quot;&gt;&lt;pre class=&quot;language-mermaid&quot;&gt;&lt;code class=&quot;language-mermaid&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;graph&lt;/span&gt; TD&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    F&lt;span class=&quot;token text string&quot;&gt;((F))&lt;/span&gt;&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;B&lt;span class=&quot;token text string&quot;&gt;((B))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    F&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;G&lt;span class=&quot;token text string&quot;&gt;((G))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    B&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;A&lt;span class=&quot;token text string&quot;&gt;((A))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    B&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;D&lt;span class=&quot;token text string&quot;&gt;((D))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;After repeating this process you will reconstruct the whole tree:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mermaid&quot;&gt;&lt;pre class=&quot;language-mermaid&quot;&gt;&lt;code class=&quot;language-mermaid&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;graph&lt;/span&gt; TD&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    F&lt;span class=&quot;token text string&quot;&gt;((F))&lt;/span&gt;&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;B&lt;span class=&quot;token text string&quot;&gt;((B))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    F&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;G&lt;span class=&quot;token text string&quot;&gt;((G))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    B&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;A&lt;span class=&quot;token text string&quot;&gt;((A))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    B&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;D&lt;span class=&quot;token text string&quot;&gt;((D))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    D&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;C&lt;span class=&quot;token text string&quot;&gt;((C))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    D&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;E&lt;span class=&quot;token text string&quot;&gt;((E))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    G&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;I&lt;span class=&quot;token text string&quot;&gt;((I))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    G&lt;span class=&quot;token arrow operator&quot;&gt;--&gt;&lt;/span&gt;H&lt;span class=&quot;token text string&quot;&gt;((H))&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What you can do now is to wrap this process into an algorithm:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;python&quot;&gt;&lt;pre class=&quot;language-python&quot;&gt;&lt;code class=&quot;language-python&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;reconstructTree&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;in_order&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; pre_order&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# if pre_order is empty - return None&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;pre_order&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;None&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;# extract first from pre_order as root&lt;/span&gt;
+    root &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Node&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;pre_order&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    pre_order &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; pre_order&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;# split in_order based on the root into:&lt;/span&gt;
+    in_order_left &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; in_order&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;in_order&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;index&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    in_order_right &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; in_order&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;in_order&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;index&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    
+    &lt;span class=&quot;token comment&quot;&gt;# split pre_order based on in_order_right &amp;amp;in_order_left into:&lt;/span&gt;
+    pre_order_left &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; pre_order&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token builtin&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;in_order_left&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    pre_order_right &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; pre_order&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token builtin&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;in_order_right&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+
+    leftNode &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; reconstructTree&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;in_order_left&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; pre_order_left&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    rightNode &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; reconstructTree&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;in_order_right&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; pre_order_right&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;addLeft&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;leftNode&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;addRight&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;rightNode&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; root
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;5. Be careful about details&lt;/h3&gt;
+&lt;p&gt;Once the code is written, check it twice. Pay attention to boundary cases.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;0-indexed vs 1-indexed?&lt;/li&gt;
+&lt;li&gt;Double check the code where you add or substruct 1(if you do). Make sure that these boundaries are correct.&lt;/li&gt;
+&lt;li&gt;Do you compare values anywhere? Check them - should a value be &lt;em&gt;greater&lt;/em&gt; or &lt;em&gt;greater or equal&lt;/em&gt;?&lt;/li&gt;
+&lt;li&gt;Do you handle incorrect input?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These were my learnings from this year Hackercup. If you ask me how far did I go, I tell you that I almost did it to round 3(not bad for the first try). Solve challenges and have fun! Good luck!&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Microservices: Handling timeouts]]></title><description><![CDATA[The timeout pattern is perhaps the most basic way to reveal performance issues and satisfy the SLA. Even though the request did not succeed…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/microservice-timeout/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/microservice-timeout/</guid><pubDate>Wed, 01 Aug 2018 23:00:00 GMT</pubDate><content:encoded>&lt;p&gt;The timeout pattern is perhaps the most basic way to reveal performance issues and satisfy the SLA. Even though the request did not succeed, the client gets the response within a defined SLA time span and the request can be retried. It sounds easy to implement as well. Simply set the timeout in the service client, i.e. RestClient, HttpWebRequest, or HttpClient. That is where it gets a bit tricky.&lt;/p&gt;
+&lt;p&gt;Here is the excerpt from Kibana logs of the real-world production microservice. An attempt to create parking action has timed out and the caller received an error response with a 500 HTTP status code. Then the caller retried and received the error again, this time the response with 409 HTTP status code, saying that the item already exists.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/8ed5ae872d0ec221626bf8540ece9a75/e088a/kibana.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 25.316455696202528%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAFCAIAAADKYVtkAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAA7UlEQVQY002PvU7DQBCE/f4FFS2PQEMKRAURcmQUhEQFQhEIJ3Jw7vZs5+z72b3dQzYNn6aa0Wg0BTOnlJCIKEVERGKRlEh4TjAizR7ZcTrbcXIekRYLI2LhvZ+miYgwonNOKTUMdhhDd3aD9YnzH/yPnDMRhRCKnLOICLOIeO93u6/N/aq8uXy4vtjeXe1fV8f3dfvTnNoWtAYA51zOsigXS3GpiiBiZ4ztzWgaC4dBH3TzCW2t1KnvemstIiZmWfaYuSCiGOezIQTvff1dV9VTuanWj+X2+UWDAdMBgFYKAJQ27f5Dv91S9EjpF08rGhH4mpd8AAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Kibana logs&quot;
+        title=&quot;Kibana logs&quot;
+        src=&quot;/static/8ed5ae872d0ec221626bf8540ece9a75/f058b/kibana.png&quot;
+        srcset=&quot;/static/8ed5ae872d0ec221626bf8540ece9a75/c26ae/kibana.png 158w,
+/static/8ed5ae872d0ec221626bf8540ece9a75/6bdcf/kibana.png 315w,
+/static/8ed5ae872d0ec221626bf8540ece9a75/f058b/kibana.png 630w,
+/static/8ed5ae872d0ec221626bf8540ece9a75/40601/kibana.png 945w,
+/static/8ed5ae872d0ec221626bf8540ece9a75/e088a/kibana.png 1015w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The following diagram illustrates the high-level process:&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 365px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/4208fbb6468f6a6c2700009968a93d3c/2e8d1/uml.overview.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 115.82278481012658%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAXCAIAAACEf/j0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAC6klEQVQ4y41UWU8aURTmx/ahSfvSh/6AJn3oZtQ+1dQaGykqQhElyKwMggoVgeIgMyyzMRvjsAgMyHLvNA7RWgPV72FykznfPed853zXZf8L6HzHw+Hi0qLAc7ZtAwjtOXA9JDuhAMDXL19lsznnDJ5Ktm172G4M6sLoojA2pGtTn5/4IfkmsCOlqhWvIO0L0q5ABzt1866i/5KdiLbClc/w0jFSSuPs6eHAsp5Gvm0b2naL09kiV1PqvMDLtdpkVuczBBu1zXFLb6ZOh4YybOiT4ehG8EcyT3Xu9bRSWFFCorDH87u6EDTKtPN3YkPwWObxWGeSIo2LaUQ8J0unhMrX5vYM7wEAACEcjyd9a5ALR03VuFLjXTPSM3GrEenrBQidsd9e5Jo5QAAmvp/+XILSmLeF3DM686LKPK+m3/TavftVuPL5/Ibbvb2zs+X1bno2N7e23B7Plte7trb2w+NZXfmyvPD+88KHpY/vlpc+rX9fxzDsrlJXt9cTSqzE0ArH/vbvJQ5CJ1GUzWU1Ta+JosQWdVkok4epUPiIwo9JIplMiqIoCEK323XBIbC0TEMnTJVsamRTizaNWFPAO4YBO+alhOgSatQwU8EbdbLBkf1W665ylw3sgcHIVULhKLVM6GJME2JSAWvXDXtkGWJMqhByCdd5ShNjEo337pNrshyn4tQBHsOj+4vfyOABhRBRlPyVTp9lMnEsdkTFI6seZMN3SFBEBC8Wmb+jKpfL+6F9FMcQDI1EIgiGIhiK4mjI6/P5dgLBQCAY2NsLIiiK4Fj4IJxIJKYmvRFsnt0GgmHWm+1Wp9lod7vWbEtOdwNMJgDa123zqkZ35IuuWqynon2VsXTW0oqDS2UCnDAHD9dzKkBHylfL29WKv1rxV/iAKO6yjJfnfFwm1O8P5xpjSr6+amlMWmPPNDZjpk+MUlZlM2rxVGJo8EQ/T+FfdcuyOs8Ss18SCAF0rLfydYWmz509H8M5b+Afoq7tzbhtgU8AAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;UML overview&quot;
+        title=&quot;UML overview&quot;
+        src=&quot;/static/4208fbb6468f6a6c2700009968a93d3c/2e8d1/uml.overview.png&quot;
+        srcset=&quot;/static/4208fbb6468f6a6c2700009968a93d3c/c26ae/uml.overview.png 158w,
+/static/4208fbb6468f6a6c2700009968a93d3c/6bdcf/uml.overview.png 315w,
+/static/4208fbb6468f6a6c2700009968a93d3c/2e8d1/uml.overview.png 365w&quot;
+        sizes=&quot;(max-width: 365px) 100vw, 365px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;And this is a piece of code in API Gateway causing the problem:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;csharp&quot;&gt;&lt;pre class=&quot;language-csharp&quot;&gt;&lt;code class=&quot;language-csharp&quot;&gt;httpClient&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Timeout &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; TimeSpan&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;FromMilliseconds&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;timeout&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; response &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; httpClient&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;SendAsync&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;request&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Even though the request has timed out, the parking action is still being persisted. Look what happened. The API Gateway aborted the request to the Parking service once the timeout was exceeded, but it did not cancel it. At that moment the Parking service was waiting for the database operation to complete. You are totally right if you thought of what is known as Compensating Transaction pattern. And to make it right, we have to inform the Parking service that the operation was canceled and we should stop processing and roll back all the actions performed (if any). And here the CancellationToken comes into play.&lt;/p&gt;
+&lt;p&gt;This is what you would change at the API Gateway:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;csharp&quot;&gt;&lt;pre class=&quot;language-csharp&quot;&gt;&lt;code class=&quot;language-csharp&quot;&gt;&lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; tokenSource &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; CancellationTokenSource&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;CreateLinkedTokenSource&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;cancellationToken&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+tokenSource&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;CancelAfter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;timeout&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; response &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; httpClient&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;SendAsync&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;request&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; tokenSource&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Token&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And the changes on the Parking service. First, we modify the controller to accept the cancellation token:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;csharp&quot;&gt;&lt;pre class=&quot;language-csharp&quot;&gt;&lt;code class=&quot;language-csharp&quot;&gt; &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token return-type class-name&quot;&gt;Task&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;IHttpActionResult&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;StartParking&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;StartParkingRequest&lt;/span&gt; request&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;CancellationToken&lt;/span&gt; cancellationToken&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    cancellationToken&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;ThrowIfCancellationRequested&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; parking &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; parkingRequestConverter&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;ToParkingEntity&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;request&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; parkingId &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; parkingRepository&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Insert&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;parking&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; cancellationToken&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token range operator&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Finally, the repository is adjusted as follows:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;csharp&quot;&gt;&lt;pre class=&quot;language-csharp&quot;&gt;&lt;code class=&quot;language-csharp&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token return-type class-name&quot;&gt;Task&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token generic-method&quot;&gt;&lt;span class=&quot;token function&quot;&gt;Insert&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;IModel&lt;/span&gt; model&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;object&lt;/span&gt;&lt;/span&gt; param&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;CancellationToken&lt;/span&gt; cancellationToken&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token class-name&quot;&gt;T&lt;/span&gt; result&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; connection &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;CreateSqlConnection&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; transaction &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; connection&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;BeginTransaction&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;token comment&quot;&gt;//NOTE: we can not use DapperExtensions as it does not support a cancellation&lt;/span&gt;
+            &lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; sql &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; _sqlGenerator&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;GetInsertCommandText&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;model&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt;&lt;/span&gt; command &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token constructor-invocation class-name&quot;&gt;CommandDefinition&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;sql&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; param&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; transaction&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; cancellationToken&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            result &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; connection&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token generic-method&quot;&gt;&lt;span class=&quot;token function&quot;&gt;ExecuteScalarAsync&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;command&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;cancellationToken&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;IsCancellationRequested&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+                transaction&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Commit&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; result&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now, whenever the timeout is exceeded, the request is canceled, propagating the cancellation from API Gateway to the Parking service, so that the service cancels the activity accordingly. This reduces the number of errors, which in turn simplifies troubleshooting and provides consistent results.&lt;/p&gt;
+&lt;p&gt;To recap: we’ve created a linked token source with custom timeout and propagated its cancellation token all the way to the downstream service and database layer.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Hackatrain 2018]]></title><description><![CDATA[How about having a hackathon on a train? 6 hours on a train, without internet, with the speed over 180 km/h. Sounds crazy but rather cool…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/hackatrain2018/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/hackatrain2018/</guid><pubDate>Wed, 20 Jun 2018 21:00:00 GMT</pubDate><content:encoded>&lt;p&gt;How about having a hackathon on a train? 6 hours on a train, without internet, with the speed over 180 km/h. Sounds crazy but rather cool, isn’t it? Consider high-speed train heading to Berlin with 100+ participants spread over two train wagons. Here at &lt;a href=&quot;https://parkmobile.nl&quot;&gt;Parkmobile&lt;/a&gt;, we like cool things and the spirit of innovation, needless to say, I’m in!&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/3229dec9a31354f9d28de6d7abe1b1d6/a42c7/train.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAIDAQX/xAAVAQEBAAAAAAAAAAAAAAAAAAACAf/aAAwDAQACEAMQAAABRI6VE6pT/8QAGhAAAwEAAwAAAAAAAAAAAAAAAQIDAAQRIf/aAAgBAQABBQIBs4ABlQ5qntPU49kWX//EABURAQEAAAAAAAAAAAAAAAAAAAAR/9oACAEDAQE/Aar/xAAWEQEBAQAAAAAAAAAAAAAAAAAAERL/2gAIAQIBAT8Byj//xAAdEAACAgEFAAAAAAAAAAAAAAAAAQIRIQMiI3GR/9oACAEBAAY/AuT1G12y6GpWNZEtSWej/8QAGhAAAgMBAQAAAAAAAAAAAAAAAREAITFBgf/aAAgBAQABPyFMZByXgKUMWFxieqNwxoU2OCCKJjI1P//aAAwDAQACAAMAAAAQky//xAAXEQEAAwAAAAAAAAAAAAAAAAAAARFR/9oACAEDAQE/EI2u/8QAFxEBAAMAAAAAAAAAAAAAAAAAARARIf/aAAgBAgEBPxBV4w//xAAdEAEAAgICAwAAAAAAAAAAAAABABEhcTFRQWGR/9oACAEBAAE/EDOKWBd7Nx1afqo7YTwgb4hHBECUPJrqG+1yQPpLIXS25YyT/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Hackatrain 2018&quot;
+        title=&quot;Hackatrain 2018&quot;
+        src=&quot;/static/3229dec9a31354f9d28de6d7abe1b1d6/828fb/train.jpg&quot;
+        srcset=&quot;/static/3229dec9a31354f9d28de6d7abe1b1d6/ff44c/train.jpg 158w,
+/static/3229dec9a31354f9d28de6d7abe1b1d6/a6688/train.jpg 315w,
+/static/3229dec9a31354f9d28de6d7abe1b1d6/828fb/train.jpg 630w,
+/static/3229dec9a31354f9d28de6d7abe1b1d6/0ede0/train.jpg 945w,
+/static/3229dec9a31354f9d28de6d7abe1b1d6/3ac88/train.jpg 1260w,
+/static/3229dec9a31354f9d28de6d7abe1b1d6/a42c7/train.jpg 1263w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;Diving deeper&lt;/h2&gt;
+&lt;p&gt;You probably think that a hackathon looks like this:&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/06f75e025fe7d8ffb22b87982a6741c2/b2234/beer.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMEBf/EABUBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIQAxAAAAFEW1IKTTGf/8QAGhAAAgMBAQAAAAAAAAAAAAAAAgMBERMSIv/aAAgBAQABBQIl6xKvIpsE0IM4IkyvP//EABYRAAMAAAAAAAAAAAAAAAAAAAEQEf/aAAgBAwEBPwGhf//EABURAQEAAAAAAAAAAAAAAAAAAAEQ/9oACAECAQE/AQn/xAAaEAADAQEBAQAAAAAAAAAAAAAAARECIRJB/9oACAEBAAY/AvWfhaZaaXBxRmuRiuD/xAAZEAEBAQEBAQAAAAAAAAAAAAABIQAxURH/2gAIAQEAAT8hRl4pkiI/EdSAqaAE4dyafEHplvbf/9oADAMBAAIAAwAAABCkL//EABYRAQEBAAAAAAAAAAAAAAAAAAEAEf/aAAgBAwEBPxBSV2//xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAIAQIBAT8QctL/xAAeEAEBAAIBBQEAAAAAAAAAAAABEQAhMUFRcYGh8P/aAAgBAQABPxAPKVrU/GVnK6idn3kOkYpV3VxRVNqh6bfGU63HpwfeccmstI3P/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Drinking beer&quot;
+        title=&quot;Drinking beer&quot;
+        src=&quot;/static/06f75e025fe7d8ffb22b87982a6741c2/828fb/beer.jpg&quot;
+        srcset=&quot;/static/06f75e025fe7d8ffb22b87982a6741c2/ff44c/beer.jpg 158w,
+/static/06f75e025fe7d8ffb22b87982a6741c2/a6688/beer.jpg 315w,
+/static/06f75e025fe7d8ffb22b87982a6741c2/828fb/beer.jpg 630w,
+/static/06f75e025fe7d8ffb22b87982a6741c2/0ede0/beer.jpg 945w,
+/static/06f75e025fe7d8ffb22b87982a6741c2/3ac88/beer.jpg 1260w,
+/static/06f75e025fe7d8ffb22b87982a6741c2/b2234/beer.jpg 2592w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Yeah right, I wish. The beers will come later. First get your hands dirty:&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/35c0f03715946f5b82bdd0d3569cb52a/a3429/begin.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAEDAgT/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEAMQAAAB1wtrAmV//8QAGxABAAICAwAAAAAAAAAAAAAAAQIDABESITH/2gAIAQEAAQUClTxbHYeWXMsJmSe//8QAFREBAQAAAAAAAAAAAAAAAAAAEBH/2gAIAQMBAT8Bp//EABcRAQADAAAAAAAAAAAAAAAAAAABERL/2gAIAQIBAT8BqGX/xAAdEAACAQQDAAAAAAAAAAAAAAAAARECITFBUWGB/9oACAEBAAY/AlVKJ2cED7wWb9P/xAAbEAEAAwEBAQEAAAAAAAAAAAABABEhMUFRYf/aAAgBAQABPyHMq3PyIybtwlem3xmnrnagk6enpA2gj//aAAwDAQACAAMAAAAQSy//xAAWEQEBAQAAAAAAAAAAAAAAAAABAFH/2gAIAQMBAT8QEErl/8QAFxEBAAMAAAAAAAAAAAAAAAAAAQARIf/aAAgBAgEBPxC9Nibxn//EABsQAQEAAwEBAQAAAAAAAAAAAAERACExUWFx/9oACAEBAAE/EAINZVn6PME8wIbkWnzARJO4APKJ2fd5w8iIVkS9kxqQjTs5/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Working hard&quot;
+        title=&quot;Working hard&quot;
+        src=&quot;/static/35c0f03715946f5b82bdd0d3569cb52a/828fb/begin.jpg&quot;
+        srcset=&quot;/static/35c0f03715946f5b82bdd0d3569cb52a/ff44c/begin.jpg 158w,
+/static/35c0f03715946f5b82bdd0d3569cb52a/a6688/begin.jpg 315w,
+/static/35c0f03715946f5b82bdd0d3569cb52a/828fb/begin.jpg 630w,
+/static/35c0f03715946f5b82bdd0d3569cb52a/0ede0/begin.jpg 945w,
+/static/35c0f03715946f5b82bdd0d3569cb52a/3ac88/begin.jpg 1260w,
+/static/35c0f03715946f5b82bdd0d3569cb52a/a3429/begin.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;There were 14 teams with 6 participants in each team. A team contains a few software developers (usually 2-3), scientists and 1-2 students (completely non-IT folks). For example, there were two students in Theatre and Performance Studies in my team. There are also people outside of the teams: coaches, mentors and support staff. Time is very limited and you start coding only in the evening of Day 1 (certainly after dinner and a few beers) while pitches start at 2:00 PM on the Day 2. The winning team gets 5, 000 euro gross.&lt;/p&gt;
+&lt;p&gt;Parkmobile mates
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/784a8eb27df4321698582dbbe774c6e3/b17f8/Parkmobile.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 56.32911392405063%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAIEAf/EABYBAQEBAAAAAAAAAAAAAAAAAAIAAf/aAAwDAQACEAMQAAAB1XcKEtMv/8QAGRAAAgMBAAAAAAAAAAAAAAAAAhEBAxAx/9oACAEBAAEFAgtsRIs6KjP/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPwGI/8QAFREBAQAAAAAAAAAAAAAAAAAAABL/2gAIAQIBAT8BpT//xAAZEAACAwEAAAAAAAAAAAAAAAAAIQEQEeH/2gAIAQEABj8CYtk6O//EABoQAQADAQEBAAAAAAAAAAAAAAEAESExQXH/2gAIAQEAAT8hdrlWMYKk92OeV9gAuoFwiWz/2gAMAwEAAgADAAAAEFT/AP/EABURAQEAAAAAAAAAAAAAAAAAABAR/9oACAEDAQE/EJP/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/EC//xAAeEAEBAAIBBQEAAAAAAAAAAAABEQAhUTFhgZGhsf/aAAgBAQABPxBS7BKge3XjLVNE2vy3plsI00SfzDUxB3zjIiPJhUQXvn//2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Hackatrain 2018&quot;
+        title=&quot;Hackatrain 2018&quot;
+        src=&quot;/static/784a8eb27df4321698582dbbe774c6e3/828fb/Parkmobile.jpg&quot;
+        srcset=&quot;/static/784a8eb27df4321698582dbbe774c6e3/ff44c/Parkmobile.jpg 158w,
+/static/784a8eb27df4321698582dbbe774c6e3/a6688/Parkmobile.jpg 315w,
+/static/784a8eb27df4321698582dbbe774c6e3/828fb/Parkmobile.jpg 630w,
+/static/784a8eb27df4321698582dbbe774c6e3/0ede0/Parkmobile.jpg 945w,
+/static/784a8eb27df4321698582dbbe774c6e3/3ac88/Parkmobile.jpg 1260w,
+/static/784a8eb27df4321698582dbbe774c6e3/b17f8/Parkmobile.jpg 1600w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;Lessons learned&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;I do hate scrolling down all the way to the bottom of the page to see what really matters. Hence I break the rules and put important stuff right here.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;There are a few key points I took from this event. There are actually a lot more of them, but here I list crucial only:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://parkmobile.nl&quot;&gt;Parkmobile&lt;/a&gt; is a great company! Ahaha, now seriously. Having talked to the other participants (huh, competitors!) I clearly see that &lt;a href=&quot;https://parkmobile.nl&quot;&gt;Parkmobile&lt;/a&gt; invests much more into innovation and technical development of our people. Perhaps because we are part of BMW Group. Or, let’s be honest, that’s why we are part of BMW Group.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Acceptance criteria. Ask how the jury is going to choose the winner. We were all surprised with the choice…&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Communication. People like to talk and they do talk a lot, a lot more than needed. Absolutely neither listening nor analyzing what others have just said. And they try to make a &lt;del&gt;useless&lt;/del&gt; point and then they try to prove their point. And you have to learn how to stop those useless discussions and wasting the time and instead keep the team’s focus on the challenge. That is the best you can gain from hackathons&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Time management. Oh how many participants I’ve seen in panic mode on the Day 2, especially closer to the pitch time. Finally they realize how much time they wasted on nothing. Hackathon is a great excercise that builds discipline&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Teamwork. Don’t do the same mistake when you want to sit alone doing &lt;strong&gt;your part&lt;/strong&gt;. You will end up with typical problem: your part works pretty well, however whole solution does not work at all.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Energy and drive. Every team needs someone energetic and proactive. A team is loosing the willingness to win as soon as they encounter unexpected issues. Thus form the team in such a way that you have at least one &lt;strong&gt;energetic doer&lt;/strong&gt;. Someone who pushes forward and does not give up.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Go to the first row if you want nice pictures afterwards. Seriously, those lazy photographers did not bother taking pictures of people further than 1-2 row. Sit in the first row during all events and you become a star :)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Challenge&lt;/h2&gt;
+&lt;p&gt;The challenge was kept a secret till the very last moment, before we got into the train.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;You are going to the concert that ends late at night. Develop the solution by utilizing Mobility-As-A-Service, 3rd party API and Blockchain to help the users return home in time and according to their preferences.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Solution is not a big deal. The 3rd party API are well specified, we’ve got the specs from 9292, NS train ad Parkmobile. This covers all the transport and logistics from train and buses to cars and even parking lots. The main problem was a blockchain. What are you going to use it for??&lt;/p&gt;
+&lt;h2&gt;Solution&lt;/h2&gt;
+&lt;p&gt;High-level architecture
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/a551ed78bd5d27e9df56069daa3b5162/8ce22/solution.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 72.78481012658227%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAAAsTAAALEwEAmpwYAAACp0lEQVQ4y42TS2/jZBSG8w9ZVANiMbBlw2Zmx6KCJWsYIRASC7YINMCiSJTLjIjS0iSO7cSN77Ed32InceLYzvVBCaWTqq3EK73S0fmk55zvHJ0ad7Rjt9sdos12QxSPCMKIeJQQRjFFUfKgdjcGanfyN7AiigmvVXodAblZR5WbSM0LbFVgEn2LZ70g9r/Cs78g9L4kCb8mcl+QRe2HgfM4IejbhEKD0PiF2D3H6Z6jNH6m131KS3iLnvIEST5BlE4Y+k9Zb9/D0795pMNFwWw2w/d9jOtrzL6KZVmEvsvQOsNSv8Psf4+t7f0DQ/tHJqOfiIedu8Bj6LGKeU6+WDCfz8nnq9uZ7bZvvF49MsPbpWw2pOMxURDhOd5hOUmS8kC9O3oUuFwuSZMYo9dBaV0yCoYEnk0xrTMd/UqW/E6W/EY++YNt9Yoqu2CzWlH7D3LsvdbrLZ4uYQhnmMIZ2uU53fpLFPl9BOGEjvAESXwbWXoHw3yX0PuA+Xh4f4bHnaZpiqGoaLKCZVhk0zGB08Q167hmg6HdwLMaDPQ6kXdFVS6oFUXBYrG4dVVV9wrkec7/VU2SJFRVRdM19nGv1yPLsgO8LEvK/XZn2QGa53M2mzW73fa+2R5+VXNcF1lSEFoStuWSpmOK8t8TM0yT5t8CoyAhHU9xvSFlUb05t6Oz221uOgwGDpFxiWfVmQQtPE1moJpMwhHOtUKg1cnHMpElYvV7ePpnDIyPGBinOOYptn5KEn1MOfmcMp9RS/2QUL/ANf/C01/TFy/J0inbakU69HCUP3GMV/Tbr9G7XXqtT2lffYjYeo7Ufo5w9Yxu5xkD/RNmk5iapmkIbQmhKdJuikiijB/4RHGMpuuH3P5NFGU0wyCfL1ivVqyq5a2X5ZKqqA4z/AePJVo/lIS2gAAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Solution Architecture&quot;
+        title=&quot;Solution Architecture&quot;
+        src=&quot;/static/a551ed78bd5d27e9df56069daa3b5162/f058b/solution.png&quot;
+        srcset=&quot;/static/a551ed78bd5d27e9df56069daa3b5162/c26ae/solution.png 158w,
+/static/a551ed78bd5d27e9df56069daa3b5162/6bdcf/solution.png 315w,
+/static/a551ed78bd5d27e9df56069daa3b5162/f058b/solution.png 630w,
+/static/a551ed78bd5d27e9df56069daa3b5162/8ce22/solution.png 685w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;User interface written in python
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 380px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/bf36fe804a1d92ab377b4a9fef16081b/3f520/solution2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 181.0126582278481%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAkCAIAAAAGkY33AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAFtElEQVRIx4WVWY8c1RXH+xvxkLygIDAEJCeMwXyUvEaKZOFlxsADROwERQpmCdgwngxjDDLGIcRda9e+b91dXetdau9t2hNV1WCPMVKOrq6O1PfX93/OPefUgKLIc+f+srN9YfvS+X5dvPDyzvbFV3YuXe7WzvbFne0Lly6+3P/6yuXt1169fP78uTt3fhhcufKP3/7msd8/8+Spp37XrlNPPPfc02e2Tp99cevsC8+/dPaFsy9undk6/fSpJ/oDf/zDs2e2Tj/15ONvvfnGII7jyWQybW3i+1PXdX766T8kSZAUdXc4JIghMRzSNGPbtu/77aHOxuNxEAQDjHFRFHlnvXPt6tUPP3jnn1ev7X99sLt7fffLqx9d+cQw7aZpsiy7fxJjPEAIQQgRQlmWpWmKMU5TEEdRmqYgTQFIfX+aJAmEMAWgJzHGPTWAEBZFoanykCBEURR4TlZVw9AlQTBMy3FcXdd03bBMUzeMzebe0dHRarXCGLcwQqjzgKbplmXVzfzo/9kvYYxQVRRZUXYuLMo2eABAXdcAAAhhnmGEcQrAZrNZr9fHcC/b0LXh3SFJM4oiCwIviCLLsgxNy7IiipIkigQxNAx9NBq5nge64PubYZ4XjmWJkqTruqFrkqy0ofO8ZVkcx5umociSIMoUOQzCEKRpkiTHcCspzx3bIglCFARZFGiG1VSFYVhFVRmaliSRZWhBlBDG6/X6lzEjhKqqyrOsLMumaaqqXizmy8Wirpu6rheLRdPa/F6b6Ueynef5dOwqqu44rixJmqZJomSZhmXZlu3omu65riTJkiiqqqobZnvTSdmWZSmyNBpxNEUJgmhoiqoZiiLzPM9yPM9xlmmJssxzPMMwfSH+DBeFZRosQxMk2aZWEDTDMHSNIAiWHZmmQZLkiOMoiqRIUtP1IIwewEVRqEp7raIoFE3zfPv3LMuYpum47njsaXpbP1EYuo6T5cVmc4jux5xl2Ww2C2az2cyP4iSKIs91x5Pp4WbzqxX2oEj6El8sFn0q73U5PTo62mwOl6vVcrlcdXtd1/POeh8/dLPv8zw3Go1URRElSVGUIAw91/W8sePYtuOUVdVf07fUQ7Udx7Fj2233WJZpWY7jTKdTU9dVXTdNw7adqq77nk3T9AEMIcyyLAgCjuNYlpVliaZprnsehJBpGlXdHB6u5/M5xliWJEEQAWiRFsYnrCzL/g1b5+fBUlZlVVVlNzqOWxD3fYgGt//+32pRYoTTJFYUVVNVVdM1ra02Q28HgWHoqqbNZkGWZcftC2C5bPjPfxx8df6bZl0jiJI4UlRV13VVVSVJMi1L13VZljVNlWXZ91sY4y5aAOvN4u6b+4O9y9816xp2YZRlVVfVct6UGRa4kdFiEi+IgiDwPAcRyjrBLXy4IN69Mdi9dLOHW0kIeUGieKE6DjlzLFiT8aSdtf3QjeO4f6pj+J2Dwbdv3amXFQQtm2fYmCaUFTJ2xHmp5COIMABpFEVxHIdhCAB4CN5/7VazqiFAXQJxXWTLuljPq3TmyTzL0Mx4Mq3Ksp/YXdgn4Ovb3/ayMcYZxpMw1Sax6aeiNWVU2/E83/fTbvT8iuzrO8dwL1ubRIQxo8yAsSN+nMYpSJJWcBiGURT374wehXH3DmWe1UXelEUG0zQK4riNNgEohpkXeO40CEH7Sak3j8B92K2ILPfGY4IkGZoSBGEcJHY4/ZH5/t/EyI1QHKfNCbi6D5+svn7vmylKQAJwKyEFDyVsvm4ylOVZm81u71be70VbVhBl3ezArYNgAqrVfPj2weBfr36HF3AymwbxLILxNJwGaRjDaBr6syTwIx/msF411aIu+7Wsi6ZcHd2jPrw5+PhPu7c+v/3ZX7/Y+2Dv2ttfffr6Z1//bW///d299/f23tv94o1Pfvj0lniT5Q8o4QYl3qDEA1LcH2q3uVt//uh/KtBEcMN6M98AAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Frontend&quot;
+        title=&quot;Frontend&quot;
+        src=&quot;/static/bf36fe804a1d92ab377b4a9fef16081b/3f520/solution2.png&quot;
+        srcset=&quot;/static/bf36fe804a1d92ab377b4a9fef16081b/c26ae/solution2.png 158w,
+/static/bf36fe804a1d92ab377b4a9fef16081b/6bdcf/solution2.png 315w,
+/static/bf36fe804a1d92ab377b4a9fef16081b/3f520/solution2.png 380w&quot;
+        sizes=&quot;(max-width: 380px) 100vw, 380px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;IBM Hyperledger Fabric model
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/c8096e49bcd7d5415a8d511cc40b457a/c6671/blockchain.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 76.58227848101265%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAAA7CAAAOwgEVKEqAAAACeUlEQVQ4y4WS2U4TYRiG5zbUKGsL05WW0na6MUVqkMWFA0/ElAQMQjSYeG68AOOdeOolGA88MXFJCBIFgrU1XWY605luj5kfwaIV/+TJd/Q/eb9Fsm0bh3a7fYph2mh1G9NqYVgtTKuNYbWxW9Bsn49kGCblchXTbNBoNHCephtsbD3hbn6L1fVt8mvbrN1/yMbmY1bXH7GSf8C91U1WVjdF7UU6KlQoFktomk6jYdFqtShXaoRjM1weDuGSFUZlhSFXhMHRMAMjodN6acDDhSsyF3uQKlWd78WSSOjIOp0O1ZpOOruAP6SiZG4RTS4RTS4i++OM+2LnIlmWRbH0A6c6Muc5wpS6wLgvQTAyQ2Ayi3cihSeQwhtM45tI4/ZO4ZIjuD2/q4NkWTaVSk0kdITdbpeaVkdJz+EPzZCYXiaeuY0cSOLxx5B9UVy/PvdDOk7VpdvtiA0fJ6yTUucZ8yoEwiq+iQz+cJZAOI0/lEL2K2dSnRH2nkuvMKnO4wlmiCjzhGNzQuL2OnNSGPfFcXsifaXnCsd8CuHYNSGdjDsjmP5D9LdUtHzCidCZYXL6Ot5ghqnEAlOJRbEYkbLns0v+T8vO2dDtioTp7KLYajiaIxTNiXSeQEK0O+aN/hPJNE1qNQ1Nr4vabDapVDWiiRzD7gi+kHMyKm5PnJGxSYZcIQZGAgyOBvsiGaZBtVpF02rYtnUqXL6TF5tWZ5dQry6hzt4g65C7ecxsfyS9blAoljk8KolWm00b3Wiws3fAh0+fef9xl929A/YPC3zZ/yb4elDg8KjYF+ntuyOevXjD0+eveflqB2ih1U2qmklFM6jpjb7oht2Xn279Dd9aByWyAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Blockchain&quot;
+        title=&quot;Blockchain&quot;
+        src=&quot;/static/c8096e49bcd7d5415a8d511cc40b457a/f058b/blockchain.png&quot;
+        srcset=&quot;/static/c8096e49bcd7d5415a8d511cc40b457a/c26ae/blockchain.png 158w,
+/static/c8096e49bcd7d5415a8d511cc40b457a/6bdcf/blockchain.png 315w,
+/static/c8096e49bcd7d5415a8d511cc40b457a/f058b/blockchain.png 630w,
+/static/c8096e49bcd7d5415a8d511cc40b457a/40601/blockchain.png 945w,
+/static/c8096e49bcd7d5415a8d511cc40b457a/c6671/blockchain.png 1129w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;Day 1&lt;/h2&gt;
+&lt;p&gt;We gathered in Amsterdam Central Station at 8:30 AM, had breakfast and met our teams. A few minutes to socialise and we were ready to get on the train.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/a31c0a0cb814ee82c1cb7929ea9ffddd/1fc44/outtrain.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 133.54430379746836%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAbABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABAACBf/EABYBAQEBAAAAAAAAAAAAAAAAAAIAAf/aAAwDAQACEAMQAAABIokVuzMaUHv5cyRV/8QAHRAAAgEEAwAAAAAAAAAAAAAAAgMBAAQRMxASMv/aAAgBAQABBQJM9JXhdF6gJGncGZsC2VDBavB1ba37f//EABURAQEAAAAAAAAAAAAAAAAAABAB/9oACAEDAQE/ASH/xAAVEQEBAAAAAAAAAAAAAAAAAAAQAf/aAAgBAgEBPwEp/8QAHRAAAgICAwEAAAAAAAAAAAAAAAERIQIQAxJRsf/aAAgBAQAGPwL1Hb6OSXBdPSwdjfI5uMShaZ//xAAcEAEAAgIDAQAAAAAAAAAAAAABABEhMUFhsZH/2gAIAQEAAT8hOxFjhgbFvIOlxqmSuWIqfECNDAYeWVQHUITbcRtTY4ILialZ7Vc9X2Jh/9oADAMBAAIAAwAAABB4yAz/xAAXEQEBAQEAAAAAAAAAAAAAAAABACEx/9oACAEDAQE/EAE2e2Am/8QAFxEBAQEBAAAAAAAAAAAAAAAAAQARIf/aAAgBAgEBPxA4xPW2/8QAHxABAQACAgMAAwAAAAAAAAAAAREAIUGxMWGBUZHh/9oACAEBAAE/ELoyDUCsb87zUcLYgOmef3iJCiDa5Hm1B0V43i3Qj8xuk4ifRybFAdY+9+adEN++cD92lCf36xZ0yUxAwba9qlxwTVdwIB4Os//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Getting into train&quot;
+        title=&quot;Getting into train&quot;
+        src=&quot;/static/a31c0a0cb814ee82c1cb7929ea9ffddd/828fb/outtrain.jpg&quot;
+        srcset=&quot;/static/a31c0a0cb814ee82c1cb7929ea9ffddd/ff44c/outtrain.jpg 158w,
+/static/a31c0a0cb814ee82c1cb7929ea9ffddd/a6688/outtrain.jpg 315w,
+/static/a31c0a0cb814ee82c1cb7929ea9ffddd/828fb/outtrain.jpg 630w,
+/static/a31c0a0cb814ee82c1cb7929ea9ffddd/0ede0/outtrain.jpg 945w,
+/static/a31c0a0cb814ee82c1cb7929ea9ffddd/3ac88/outtrain.jpg 1260w,
+/static/a31c0a0cb814ee82c1cb7929ea9ffddd/1fc44/outtrain.jpg 3120w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Train is full. Berlin, here we come!
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b989dfc04b5cacfd0444521aaaec1dc4/b3058/start.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAIBAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAACAAH/2gAMAwEAAhADEAAAAUWALWWFn//EABkQAQADAQEAAAAAAAAAAAAAAAIAAxEBE//aAAgBAQABBQJlwdcNt2CzrVuexSz/xAAWEQEBAQAAAAAAAAAAAAAAAAAAETH/2gAIAQMBAT8BxX//xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAIAQIBAT8BQbL/xAAdEAACAgEFAAAAAAAAAAAAAAAAAQIRoSExMkGB/9oACAEBAAY/Ar6HSXptgip6opWcsH//xAAaEAACAwEBAAAAAAAAAAAAAAAAAREhMVFB/9oACAEBAAE/IVl26IpaSlwwgYoFJXEUpG9GsV5R/9oADAMBAAIAAwAAABCvz//EABcRAAMBAAAAAAAAAAAAAAAAAAABESH/2gAIAQMBAT8Q1YUf/8QAFREBAQAAAAAAAAAAAAAAAAAAARD/2gAIAQIBAT8QQn//xAAcEAEAAwACAwAAAAAAAAAAAAABABEhMXFBUYH/2gAIAQEAAT8QwwEMU4HENh7IWuxlCV1lgXW871EIKWua6+UQTbDQDdeZ/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Start&quot;
+        title=&quot;Start&quot;
+        src=&quot;/static/b989dfc04b5cacfd0444521aaaec1dc4/828fb/start.jpg&quot;
+        srcset=&quot;/static/b989dfc04b5cacfd0444521aaaec1dc4/ff44c/start.jpg 158w,
+/static/b989dfc04b5cacfd0444521aaaec1dc4/a6688/start.jpg 315w,
+/static/b989dfc04b5cacfd0444521aaaec1dc4/828fb/start.jpg 630w,
+/static/b989dfc04b5cacfd0444521aaaec1dc4/0ede0/start.jpg 945w,
+/static/b989dfc04b5cacfd0444521aaaec1dc4/3ac88/start.jpg 1260w,
+/static/b989dfc04b5cacfd0444521aaaec1dc4/b3058/start.jpg 1296w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;That was quite warm weather and it was incredibly hot inside the train. We had to change our sweaty T-shirts every now and then.&lt;/p&gt;
+&lt;p&gt;Finally the team sits together and we begin brainstorming.
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/c7f06bcf77d734c3ca0b779575287af7/a3429/cards.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAwAEBf/EABYBAQEBAAAAAAAAAAAAAAAAAAABAv/aAAwDAQACEAMQAAABRua2S2Kr/8QAGhABAAIDAQAAAAAAAAAAAAAAAQADAhETEv/aAAgBAQABBQLEIBqV2vnto7k//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFREBAQAAAAAAAAAAAAAAAAAAACH/2gAIAQIBAT8Bqv/EABsQAAIBBQAAAAAAAAAAAAAAAAAxAQIQITKR/9oACAEBAAY/AlwlwIxSjWLf/8QAGxABAAMBAAMAAAAAAAAAAAAAAQARMSFBUXH/2gAIAQEAAT8hqdtGeDzbOwjgSmwLXh7YpgH2f//aAAwDAQACAAMAAAAQWM//xAAWEQADAAAAAAAAAAAAAAAAAAAAARH/2gAIAQMBAT8QUIj/xAAVEQEBAAAAAAAAAAAAAAAAAAAREP/aAAgBAgEBPxAUf//EABwQAQEAAgIDAAAAAAAAAAAAAAERACExUZGhsf/aAAgBAQABPxBcvZqsCAtDQuQ6jzi7RhqPXeKxLFtfWQnTcBX5n//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Cards&quot;
+        title=&quot;Cards&quot;
+        src=&quot;/static/c7f06bcf77d734c3ca0b779575287af7/828fb/cards.jpg&quot;
+        srcset=&quot;/static/c7f06bcf77d734c3ca0b779575287af7/ff44c/cards.jpg 158w,
+/static/c7f06bcf77d734c3ca0b779575287af7/a6688/cards.jpg 315w,
+/static/c7f06bcf77d734c3ca0b779575287af7/828fb/cards.jpg 630w,
+/static/c7f06bcf77d734c3ca0b779575287af7/0ede0/cards.jpg 945w,
+/static/c7f06bcf77d734c3ca0b779575287af7/3ac88/cards.jpg 1260w,
+/static/c7f06bcf77d734c3ca0b779575287af7/a3429/cards.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;At that moment, the main challenge was to stay together and follow the discussion. A lot of people constantly passing nearby were distracting us
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/3a3f51dd62de8712717c112cefe0cfeb/3c0e0/brainstorming.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 65.82278481012659%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAANABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAQFAf/EABQBAQAAAAAAAAAAAAAAAAAAAAL/2gAMAwEAAhADEAAAAVm5lIp8wQ//xAAdEAACAQQDAAAAAAAAAAAAAAABAwIABBETEiEj/9oACAEBAAEFApyIWgwmdeaR6t46ha9p/8QAFhEAAwAAAAAAAAAAAAAAAAAAARAh/9oACAEDAQE/ATV//8QAFhEAAwAAAAAAAAAAAAAAAAAAAAER/9oACAECAQE/AUoQ/8QAGhAAAwEAAwAAAAAAAAAAAAAAAAERAhIxcf/aAAgBAQAGPwJLnaZi9KoZzrouRNs//8QAGhABAAMBAQEAAAAAAAAAAAAAAQARIVFhMf/aAAgBAQABPyEpEjYB0AKO8iUgh9gsa0zyFpt241QVX7P/2gAMAwEAAgADAAAAENcf/8QAFhEAAwAAAAAAAAAAAAAAAAAAARBB/9oACAEDAQE/EChf/8QAGBEAAwEBAAAAAAAAAAAAAAAAAAEhEVH/2gAIAQIBAT8QRrpEZ//EAB4QAAICAgIDAAAAAAAAAAAAAAERACFBgTFRccHw/9oACAEBAAE/ECKgjCqpbWoPCHuwA9Lh2NMWoThFi3zUDiqoEQ0ljuoXpoWa8T//2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Brainstorming&quot;
+        title=&quot;Brainstorming&quot;
+        src=&quot;/static/3a3f51dd62de8712717c112cefe0cfeb/828fb/brainstorming.jpg&quot;
+        srcset=&quot;/static/3a3f51dd62de8712717c112cefe0cfeb/ff44c/brainstorming.jpg 158w,
+/static/3a3f51dd62de8712717c112cefe0cfeb/a6688/brainstorming.jpg 315w,
+/static/3a3f51dd62de8712717c112cefe0cfeb/828fb/brainstorming.jpg 630w,
+/static/3a3f51dd62de8712717c112cefe0cfeb/0ede0/brainstorming.jpg 945w,
+/static/3a3f51dd62de8712717c112cefe0cfeb/3ac88/brainstorming.jpg 1260w,
+/static/3a3f51dd62de8712717c112cefe0cfeb/3c0e0/brainstorming.jpg 1361w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;And the next distraction was that noise produced by all of us. And that fluffy unicorn
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/ba80dd3be075f9e75485c66bd1871906/a3429/unicorn.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAIDBP/EABcBAAMBAAAAAAAAAAAAAAAAAAABAgP/2gAMAwEAAhADEAAAAUm+JGomRr//xAAaEAACAwEBAAAAAAAAAAAAAAABAgADIhIh/9oACAEBAAEFAq6NNl2bklo3kBJn/8QAFxEAAwEAAAAAAAAAAAAAAAAAAAECEv/aAAgBAwEBPwGWZo//xAAXEQADAQAAAAAAAAAAAAAAAAAAAQIR/9oACAECAQE/AXJiP//EABsQAQACAgMAAAAAAAAAAAAAAAEAEQIQITFB/9oACAEBAAY/AkxanKKWSnuCex1//8QAGxAAAwEBAAMAAAAAAAAAAAAAAAERIVExodH/2gAIAQEAAT8hW2lkrGYgIr16we15nyVDZmPonrfo/9oADAMBAAIAAwAAABAz/wD/xAAWEQEBAQAAAAAAAAAAAAAAAAAAAWH/2gAIAQMBAT8QpWb/xAAWEQEBAQAAAAAAAAAAAAAAAAAAQWH/2gAIAQIBAT8Qo1f/xAAeEAEAAgICAwEAAAAAAAAAAAABABEhMVGBQWGRof/aAAgBAQABPxASrrNm/URifhkN7fncY15KBp7m5SWueH7KFgssC8m5TKOtJ//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Unicorn&quot;
+        title=&quot;Unicorn&quot;
+        src=&quot;/static/ba80dd3be075f9e75485c66bd1871906/828fb/unicorn.jpg&quot;
+        srcset=&quot;/static/ba80dd3be075f9e75485c66bd1871906/ff44c/unicorn.jpg 158w,
+/static/ba80dd3be075f9e75485c66bd1871906/a6688/unicorn.jpg 315w,
+/static/ba80dd3be075f9e75485c66bd1871906/828fb/unicorn.jpg 630w,
+/static/ba80dd3be075f9e75485c66bd1871906/0ede0/unicorn.jpg 945w,
+/static/ba80dd3be075f9e75485c66bd1871906/3ac88/unicorn.jpg 1260w,
+/static/ba80dd3be075f9e75485c66bd1871906/a3429/unicorn.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;In a few more hours we were completely exhausted, and finally silence came to the stage.
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/9fc334a44e4e57e63d26675be20f8c08/a3429/silence.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAMEAgb/xAAVAQEBAAAAAAAAAAAAAAAAAAABAv/aAAwDAQACEAMQAAABZEnEvREwn//EABkQAQEBAQEBAAAAAAAAAAAAAAIBAxIRMf/aAAgBAQABBQLSlWfTT5dOUdF0NLB//8QAFhEBAQEAAAAAAAAAAAAAAAAAAAEh/9oACAEDAQE/AZWv/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEh/9oACAECAQE/AYx//8QAHhAAAgIABwAAAAAAAAAAAAAAAAIBIRESMVFhgaH/2gAIAQEABj8CbL0al4tyTZUxe4sK/h//xAAZEAEAAwEBAAAAAAAAAAAAAAABABExIVH/2gAIAQEAAT8hHx5jPSWANadSZlfBc4lWsA1GOLlZACux/9oADAMBAAIAAwAAABBrL//EABgRAQEAAwAAAAAAAAAAAAAAAAEAESFR/9oACAEDAQE/EENZk4v/xAAYEQEAAwEAAAAAAAAAAAAAAAABABEhMf/aAAgBAgEBPxBDtQudn//EAB0QAQACAwADAQAAAAAAAAAAAAEAESExQVFhcYH/2gAIAQEAAT8Q217KorJRXGYGVG8/DtQOZHeLjifsaytFujy+25puBoXi4na/AuRZ/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Silence&quot;
+        title=&quot;Silence&quot;
+        src=&quot;/static/9fc334a44e4e57e63d26675be20f8c08/828fb/silence.jpg&quot;
+        srcset=&quot;/static/9fc334a44e4e57e63d26675be20f8c08/ff44c/silence.jpg 158w,
+/static/9fc334a44e4e57e63d26675be20f8c08/a6688/silence.jpg 315w,
+/static/9fc334a44e4e57e63d26675be20f8c08/828fb/silence.jpg 630w,
+/static/9fc334a44e4e57e63d26675be20f8c08/0ede0/silence.jpg 945w,
+/static/9fc334a44e4e57e63d26675be20f8c08/3ac88/silence.jpg 1260w,
+/static/9fc334a44e4e57e63d26675be20f8c08/a3429/silence.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Ho-ho-ho. 100+ geeks in front of Berlin Central Station.
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/c1fa884eba602b3e9f1729ab9cb0e292/b2234/arrived.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAwAC/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIQAxAAAAFsGAtiuf/EABoQAAIDAQEAAAAAAAAAAAAAAAECAAMEERL/2gAIAQEAAQUCOjkstLqEEzeeO0Aeyf/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8BP//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8BP//EABsQAAICAwEAAAAAAAAAAAAAAAAhARICMUEi/9oACAEBAAY/AkMZlNfUdNqOFrbP/8QAGxABAAIDAQEAAAAAAAAAAAAAAQARITFBUXH/2gAIAQEAAT8hV0rTcy1hOdhRHkZaX7Xs0B0NcQaoOp//2gAMAwEAAgADAAAAEPjf/8QAFxEBAQEBAAAAAAAAAAAAAAAAEQABYf/aAAgBAwEBPxAwY5f/xAAWEQADAAAAAAAAAAAAAAAAAAAAESH/2gAIAQIBAT8QdRD/xAAdEAEBAAICAwEAAAAAAAAAAAABEQAhQYExcfBh/9oACAEBAAE/EIYEusXq4h0zAI7cfcY6cmRanuY6BJq8j8etd4qHvAtGjfeIESURI/TP/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Arrived&quot;
+        title=&quot;Arrived&quot;
+        src=&quot;/static/c1fa884eba602b3e9f1729ab9cb0e292/828fb/arrived.jpg&quot;
+        srcset=&quot;/static/c1fa884eba602b3e9f1729ab9cb0e292/ff44c/arrived.jpg 158w,
+/static/c1fa884eba602b3e9f1729ab9cb0e292/a6688/arrived.jpg 315w,
+/static/c1fa884eba602b3e9f1729ab9cb0e292/828fb/arrived.jpg 630w,
+/static/c1fa884eba602b3e9f1729ab9cb0e292/0ede0/arrived.jpg 945w,
+/static/c1fa884eba602b3e9f1729ab9cb0e292/3ac88/arrived.jpg 1260w,
+/static/c1fa884eba602b3e9f1729ab9cb0e292/b2234/arrived.jpg 2592w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;On site. Everybody is looking for a cozy place for the team.
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/04e84075cb5289bb286a5fede46fae82/a3429/venue.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAUCAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAYblFmTMSFf/xAAaEAEAAgMBAAAAAAAAAAAAAAACAAEREyEj/9oACAEBAAEFAi1NlklZNdmfPeZ//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFREBAQAAAAAAAAAAAAAAAAAAEBH/2gAIAQIBAT8Bp//EABgQAAMBAQAAAAAAAAAAAAAAAAABETEi/9oACAEBAAY/Al2OiuijKjGf/8QAGhAAAwADAQAAAAAAAAAAAAAAAAERITFBUf/aAAgBAQABPyFTCIolKWuzURQcitAuoWZqr0ezn7T/2gAMAwEAAgADAAAAEK/P/8QAFhEAAwAAAAAAAAAAAAAAAAAAAAER/9oACAEDAQE/EIiI/8QAFxEBAAMAAAAAAAAAAAAAAAAAAAERIf/aAAgBAgEBPxDS5f/EABoQAQEAAwEBAAAAAAAAAAAAAAERACExUbH/2gAIAQEAAT8QQbRpNa4czosFWzGFKtmdwJZM1Xl3v5jAYABIcq4AQlr0z//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Venue&quot;
+        title=&quot;Venue&quot;
+        src=&quot;/static/04e84075cb5289bb286a5fede46fae82/828fb/venue.jpg&quot;
+        srcset=&quot;/static/04e84075cb5289bb286a5fede46fae82/ff44c/venue.jpg 158w,
+/static/04e84075cb5289bb286a5fede46fae82/a6688/venue.jpg 315w,
+/static/04e84075cb5289bb286a5fede46fae82/828fb/venue.jpg 630w,
+/static/04e84075cb5289bb286a5fede46fae82/0ede0/venue.jpg 945w,
+/static/04e84075cb5289bb286a5fede46fae82/3ac88/venue.jpg 1260w,
+/static/04e84075cb5289bb286a5fede46fae82/a3429/venue.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Time for dinner.
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/aef073e4c0f3c5f26735f4e2083fdd9c/8e1fc/dinner.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 66.45569620253164%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAANABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMFBP/EABcBAAMBAAAAAAAAAAAAAAAAAAABAgP/2gAMAwEAAhADEAAAAZ63bI0nFgF//8QAGhAAAgIDAAAAAAAAAAAAAAAAAQIAAxITIv/aAAgBAQABBQJ1hXtqSJWocAYNtn//xAAVEQEBAAAAAAAAAAAAAAAAAAARAP/aAAgBAwEBPwEYv//EABURAQEAAAAAAAAAAAAAAAAAAAAR/9oACAECAQE/Aar/xAAaEAACAgMAAAAAAAAAAAAAAAAAASExAhFB/9oACAEBAAY/Ak0QWbyI4Uf/xAAYEAADAQEAAAAAAAAAAAAAAAAAAREhQf/aAAgBAQABPyFbcuxQ1KmkNVh1U1dbFBWdXoxyf//aAAwDAQACAAMAAAAQNB//xAAXEQEBAQEAAAAAAAAAAAAAAAABABEx/9oACAEDAQE/EELTlm//xAAXEQADAQAAAAAAAAAAAAAAAAAAAREh/9oACAECAQE/EHGFn//EABwQAQACAgMBAAAAAAAAAAAAAAEAETFBIZHRYf/aAAgBAQABPxBjMqHfkUukSwuupivYrXx5hLgFYoMSr0qxbU3LAOsPJ//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Dinner&quot;
+        title=&quot;Dinner&quot;
+        src=&quot;/static/aef073e4c0f3c5f26735f4e2083fdd9c/828fb/dinner.jpg&quot;
+        srcset=&quot;/static/aef073e4c0f3c5f26735f4e2083fdd9c/ff44c/dinner.jpg 158w,
+/static/aef073e4c0f3c5f26735f4e2083fdd9c/a6688/dinner.jpg 315w,
+/static/aef073e4c0f3c5f26735f4e2083fdd9c/828fb/dinner.jpg 630w,
+/static/aef073e4c0f3c5f26735f4e2083fdd9c/8e1fc/dinner.jpg 900w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Let the coding fun begin!
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/35a33e51a9c8b48271d5abce17402e67/8e1fc/begincoding.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 66.45569620253164%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAANABQDASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAQBAgMF/8QAFgEBAQEAAAAAAAAAAAAAAAAAAgAD/9oADAMBAAIQAxAAAAHnM2l64jIL/8QAGhAAAwADAQAAAAAAAAAAAAAAAAECAxESIf/aAAgBAQABBQL03TOXvDM3iaR20f/EABcRAAMBAAAAAAAAAAAAAAAAAAABERL/2gAIAQMBAT8B06Vn/8QAGBEAAgMAAAAAAAAAAAAAAAAAABEBAkH/2gAIAQIBAT8BstHB/8QAHhAAAgEDBQAAAAAAAAAAAAAAAAECEBESISIxQYH/2gAIAQEABj8CMXH05ReS7Nqx1p//xAAbEAADAQADAQAAAAAAAAAAAAABESEAMUFRYf/aAAgBAQABPyFKCAPJgIAk/h4tIQfurCZ563AQqHNFIOwb/9oADAMBAAIAAwAAABCg7//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8QNf/EABcRAAMBAAAAAAAAAAAAAAAAAAABEWH/2gAIAQIBAT8Qq6MT/8QAHRABAQADAAIDAAAAAAAAAAAAAREAITFBUWGBkf/aAAgBAQABPxDZYrA5YdwgOBFQnb6w22iAkPtyiGlbACUnziZAREXnK+NYUmiom/zP/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Coding&quot;
+        title=&quot;Coding&quot;
+        src=&quot;/static/35a33e51a9c8b48271d5abce17402e67/828fb/begincoding.jpg&quot;
+        srcset=&quot;/static/35a33e51a9c8b48271d5abce17402e67/ff44c/begincoding.jpg 158w,
+/static/35a33e51a9c8b48271d5abce17402e67/a6688/begincoding.jpg 315w,
+/static/35a33e51a9c8b48271d5abce17402e67/828fb/begincoding.jpg 630w,
+/static/35a33e51a9c8b48271d5abce17402e67/8e1fc/begincoding.jpg 900w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;And the coding continues at night
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/6756cdad84b01f632dd503b82a44c831/a3429/codingnight.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAIBAwX/xAAVAQEBAAAAAAAAAAAAAAAAAAACA//aAAwDAQACEAMQAAABzGl6UoHEf//EABwQAAEDBQAAAAAAAAAAAAAAAAIAARIDEBETIf/aAAgBAQABBQKfBxaTA41VsX//xAAWEQEBAQAAAAAAAAAAAAAAAAAAEgH/2gAIAQMBAT8BtWv/xAAYEQADAQEAAAAAAAAAAAAAAAAAElEBAv/aAAgBAgEBPwFMovNP/8QAGBAAAwEBAAAAAAAAAAAAAAAAABEyEFH/2gAIAQEABj8CSJedJJP/xAAdEAADAAICAwAAAAAAAAAAAAAAAREhcTFBYYHw/9oACAEBAAE/IV1LEivJSLXorSJoQsc35h8I/9oADAMBAAIAAwAAABAoD//EABcRAQEBAQAAAAAAAAAAAAAAAAEAIWH/2gAIAQMBAT8QGulwv//EABcRAQADAAAAAAAAAAAAAAAAAAABEfD/2gAIAQIBAT8QpNIf/8QAHhABAQACAgIDAAAAAAAAAAAAAREAITFxUWGRofH/2gAIAQEAAT8QgmaJa/ORXyRtOOsIba8bTFkXOh1+8unQePynrIdwdpn/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Coding&quot;
+        title=&quot;Coding&quot;
+        src=&quot;/static/6756cdad84b01f632dd503b82a44c831/828fb/codingnight.jpg&quot;
+        srcset=&quot;/static/6756cdad84b01f632dd503b82a44c831/ff44c/codingnight.jpg 158w,
+/static/6756cdad84b01f632dd503b82a44c831/a6688/codingnight.jpg 315w,
+/static/6756cdad84b01f632dd503b82a44c831/828fb/codingnight.jpg 630w,
+/static/6756cdad84b01f632dd503b82a44c831/0ede0/codingnight.jpg 945w,
+/static/6756cdad84b01f632dd503b82a44c831/3ac88/codingnight.jpg 1260w,
+/static/6756cdad84b01f632dd503b82a44c831/a3429/codingnight.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Best of late-night
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/f1dc6bb5b8ccb0196a7960c20a383c98/a3429/codinglatenight.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAQFAv/EABUBAQEAAAAAAAAAAAAAAAAAAAID/9oADAMBAAIQAxAAAAGUMuUc4yB//8QAGhAAAgMBAQAAAAAAAAAAAAAAAQMAAhEEEP/aAAgBAQABBQKoMK7SgXnMca9u+f/EABYRAQEBAAAAAAAAAAAAAAAAAAABEv/aAAgBAwEBPwFmP//EABYRAQEBAAAAAAAAAAAAAAAAAAARIf/aAAgBAgEBPwGYj//EABsQAAICAwEAAAAAAAAAAAAAAAABESEQIjEy/9oACAEBAAY/Aq6WmbzJKVnlTj//xAAZEAADAQEBAAAAAAAAAAAAAAAAAREhMXH/2gAIAQEAAT8hUk18nRTUjj/Bk5BpukDqW61SM//aAAwDAQACAAMAAAAQQP8A/8QAGBEAAwEBAAAAAAAAAAAAAAAAAAERIWH/2gAIAQMBAT8QjqUw5H//xAAWEQEBAQAAAAAAAAAAAAAAAAARARD/2gAIAQIBAT8QjWP/xAAdEAEAAwACAwEAAAAAAAAAAAABABEhQZFRYaHB/9oACAEBAAE/ED1paS3Uur67Yh9gkDL4s9xbjEWw4/YF/E1GW8D1P//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Coding&quot;
+        title=&quot;Coding&quot;
+        src=&quot;/static/f1dc6bb5b8ccb0196a7960c20a383c98/828fb/codinglatenight.jpg&quot;
+        srcset=&quot;/static/f1dc6bb5b8ccb0196a7960c20a383c98/ff44c/codinglatenight.jpg 158w,
+/static/f1dc6bb5b8ccb0196a7960c20a383c98/a6688/codinglatenight.jpg 315w,
+/static/f1dc6bb5b8ccb0196a7960c20a383c98/828fb/codinglatenight.jpg 630w,
+/static/f1dc6bb5b8ccb0196a7960c20a383c98/0ede0/codinglatenight.jpg 945w,
+/static/f1dc6bb5b8ccb0196a7960c20a383c98/3ac88/codinglatenight.jpg 1260w,
+/static/f1dc6bb5b8ccb0196a7960c20a383c98/a3429/codinglatenight.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Very late at night
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/3ef8fa5e690fb53faf28c62471220cd5/b17f8/coding.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 56.32911392405063%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAMBAgX/xAAVAQEBAAAAAAAAAAAAAAAAAAABBP/aAAwDAQACEAMQAAABzLLkrBYn/8QAGxAAAgEFAAAAAAAAAAAAAAAAAAERAhIhIjH/2gAIAQEAAQUC4lVrfAiWh5f/xAAYEQADAQEAAAAAAAAAAAAAAAAAAQIRIf/aAAgBAwEBPwG8o21xH//EABYRAAMAAAAAAAAAAAAAAAAAAAECEP/aAAgBAgEBPwFRP//EABgQAAMBAQAAAAAAAAAAAAAAAAAQMQEh/9oACAEBAAY/AiaRcX//xAAaEAADAQEBAQAAAAAAAAAAAAAAAREhMUGR/9oACAEBAAE/IVLstHxNmq76be6KWpoqa32n/9oADAMBAAIAAwAAABDgD//EABcRAQADAAAAAAAAAAAAAAAAAAEAESH/2gAIAQMBAT8QAF4ECWYT/8QAFxEAAwEAAAAAAAAAAAAAAAAAAAERMf/aAAgBAgEBPxCGjZ//xAAbEAEAAwEAAwAAAAAAAAAAAAABABEhMUGBsf/aAAgBAQABPxCw4UwxeHlnyJfROgD7jasq47FHYaODAHFJWf/Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Coding&quot;
+        title=&quot;Coding&quot;
+        src=&quot;/static/3ef8fa5e690fb53faf28c62471220cd5/828fb/coding.jpg&quot;
+        srcset=&quot;/static/3ef8fa5e690fb53faf28c62471220cd5/ff44c/coding.jpg 158w,
+/static/3ef8fa5e690fb53faf28c62471220cd5/a6688/coding.jpg 315w,
+/static/3ef8fa5e690fb53faf28c62471220cd5/828fb/coding.jpg 630w,
+/static/3ef8fa5e690fb53faf28c62471220cd5/0ede0/coding.jpg 945w,
+/static/3ef8fa5e690fb53faf28c62471220cd5/3ac88/coding.jpg 1260w,
+/static/3ef8fa5e690fb53faf28c62471220cd5/b17f8/coding.jpg 1600w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;It’s almost morning
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/babeada3bc4dcb13035d8649c770f47b/b17f8/codingverylatenight.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 56.32911392405063%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMEBf/EABUBAQEAAAAAAAAAAAAAAAAAAAED/9oADAMBAAIQAxAAAAHDdbMWaSln/8QAGhABAQACAwAAAAAAAAAAAAAAAQACEQMyM//aAAgBAQABBQII2Wm4PPLu5Jf/xAAYEQACAwAAAAAAAAAAAAAAAAAAAQISIf/aAAgBAwEBPwFRwsj/xAAYEQADAQEAAAAAAAAAAAAAAAAAAQIREv/aAAgBAgEBPwGa14dI/8QAGhAAAgIDAAAAAAAAAAAAAAAAAAECITFhkf/aAAgBAQAGPwIwU1wS2SKZ/8QAGhAAAwEAAwAAAAAAAAAAAAAAAAERIWGBkf/aAAgBAQABPyGiGko8GzZ+TprVeC9ZLTEof//aAAwDAQACAAMAAAAQVw//xAAXEQADAQAAAAAAAAAAAAAAAAAAAREh/9oACAEDAQE/EJUNGM//xAAXEQEAAwAAAAAAAAAAAAAAAAAAARFR/9oACAECAQE/ELk2h//EABsQAQEBAAMBAQAAAAAAAAAAAAERACExQVFh/9oACAEBAAE/EHpGfXrEWTxpUzMJ9Ek/NB0UFckhgCABCBxOPMp4oXf/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Coding&quot;
+        title=&quot;Coding&quot;
+        src=&quot;/static/babeada3bc4dcb13035d8649c770f47b/828fb/codingverylatenight.jpg&quot;
+        srcset=&quot;/static/babeada3bc4dcb13035d8649c770f47b/ff44c/codingverylatenight.jpg 158w,
+/static/babeada3bc4dcb13035d8649c770f47b/a6688/codingverylatenight.jpg 315w,
+/static/babeada3bc4dcb13035d8649c770f47b/828fb/codingverylatenight.jpg 630w,
+/static/babeada3bc4dcb13035d8649c770f47b/0ede0/codingverylatenight.jpg 945w,
+/static/babeada3bc4dcb13035d8649c770f47b/3ac88/codingverylatenight.jpg 1260w,
+/static/babeada3bc4dcb13035d8649c770f47b/b17f8/codingverylatenight.jpg 1600w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;Day 2&lt;/h2&gt;
+&lt;p&gt;Next day we started at 7:00 AM. Quick breakfast and using a car sharing &lt;a href=&quot;https://www.drive-now.com/de/en&quot;&gt;DriveNow&lt;/a&gt; to get back to the venue
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABAAD/8QAFgEBAQEAAAAAAAAAAAAAAAAAAQAC/9oADAMBAAIQAxAAAAE50aAObW//xAAaEAEAAgMBAAAAAAAAAAAAAAABAgMABBIR/9oACAEBAAEFAq49Zay9jYh0xTby2YP/xAAWEQEBAQAAAAAAAAAAAAAAAAAAERL/2gAIAQMBAT8BYr//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAcEAADAAMAAwAAAAAAAAAAAAAAARECEiIDUYH/2gAIAQEABj8C20p0n9JEVEauJz48JPR//8QAGxABAAIDAQEAAAAAAAAAAAAAAQARIUFRcdH/2gAIAQEAAT8hbADzZLMBfFQWIbIOTJ6V+QbYVo//2gAMAwEAAgADAAAAEG/f/8QAFxEBAQEBAAAAAAAAAAAAAAAAAQARMf/aAAgBAwEBPxDkIbpf/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oACAECAQE/EGx//8QAHhABAQABAwUAAAAAAAAAAAAAAREAITFhQVGBkdH/2gAIAQEAAT8QMVY0NqcU4wWgQoq6/cYhDvbgo1N7nrAGkoMFPLIfipJbc//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;DriveNow&quot;
+        title=&quot;DriveNow&quot;
+        src=&quot;/static/edcb47f43e37466a8f02c73355fa8fb6/828fb/drivenow.jpg&quot;
+        srcset=&quot;/static/edcb47f43e37466a8f02c73355fa8fb6/ff44c/drivenow.jpg 158w,
+/static/edcb47f43e37466a8f02c73355fa8fb6/a6688/drivenow.jpg 315w,
+/static/edcb47f43e37466a8f02c73355fa8fb6/828fb/drivenow.jpg 630w,
+/static/edcb47f43e37466a8f02c73355fa8fb6/0ede0/drivenow.jpg 945w,
+/static/edcb47f43e37466a8f02c73355fa8fb6/9888a/drivenow.jpg 1198w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Covertible helps to wake up
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/9b8c9cdc0e9778c5008265c3e27812c1/a42c7/drivenowwakeup.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAQF/8QAFQEBAQAAAAAAAAAAAAAAAAAAAQD/2gAMAwEAAhADEAAAAdDNqkGQR//EABoQAAMAAwEAAAAAAAAAAAAAAAECAwAREhP/2gAIAQEAAQUCpYZ6MHd9saYed0Kq/wD/xAAXEQEAAwAAAAAAAAAAAAAAAAAAAREh/9oACAEDAQE/AY1T/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAHRAAAgIBBQAAAAAAAAAAAAAAAAEDESECEzJBkf/aAAgBAQAGPwJ1mi+zkvTTJRJixrbR/8QAGxABAAMBAAMAAAAAAAAAAAAAAQARYSExQVH/2gAIAQEAAT8h4nmUS4sYyKiVMENBPZ82WDXqzCKHhs//2gAMAwEAAgADAAAAEAvv/8QAFhEBAQEAAAAAAAAAAAAAAAAAAQAR/9oACAEDAQE/EARxf//EABYRAQEBAAAAAAAAAAAAAAAAAAABEf/aAAgBAgEBPxCxj//EABwQAQEAAwEBAQEAAAAAAAAAAAERACExQWFRcf/aAAgBAQABPxBUjBAds8/cbBJVukdc6RQWdYxLM+7R/Xmu4UrgUOnh9GYrPyIzU1rP/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Convertible&quot;
+        title=&quot;Convertible&quot;
+        src=&quot;/static/9b8c9cdc0e9778c5008265c3e27812c1/828fb/drivenowwakeup.jpg&quot;
+        srcset=&quot;/static/9b8c9cdc0e9778c5008265c3e27812c1/ff44c/drivenowwakeup.jpg 158w,
+/static/9b8c9cdc0e9778c5008265c3e27812c1/a6688/drivenowwakeup.jpg 315w,
+/static/9b8c9cdc0e9778c5008265c3e27812c1/828fb/drivenowwakeup.jpg 630w,
+/static/9b8c9cdc0e9778c5008265c3e27812c1/0ede0/drivenowwakeup.jpg 945w,
+/static/9b8c9cdc0e9778c5008265c3e27812c1/3ac88/drivenowwakeup.jpg 1260w,
+/static/9b8c9cdc0e9778c5008265c3e27812c1/a42c7/drivenowwakeup.jpg 1263w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Creating the presentation
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/181d942712f4df4c2053eeda5ff2f578/a3429/presentation.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMFAf/EABUBAQEAAAAAAAAAAAAAAAAAAAIB/9oADAMBAAIQAxAAAAF2y2BUycUf/8QAGRABAQEBAQEAAAAAAAAAAAAAAgEAAxIR/9oACAEBAAEFAioNXy05+sl9V9qxob//xAAWEQEBAQAAAAAAAAAAAAAAAAAAEQH/2gAIAQMBAT8Bia//xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAIAQIBAT8BbH//xAAcEAADAAEFAAAAAAAAAAAAAAAAARESAiEyQWH/2gAIAQEABj8CmqK9nJFW/pjKkXFUh//EABsQAAIDAQEBAAAAAAAAAAAAAAERADFBIVFx/9oACAEBAAE/IUCyrVAAF2orIrQz1CALIcFsYN5PjZ//2gAMAwEAAgADAAAAEKc//8QAGBEAAgMAAAAAAAAAAAAAAAAAAAERMUH/2gAIAQMBAT8QeBz2f//EABcRAQEBAQAAAAAAAAAAAAAAAAEAEVH/2gAIAQIBAT8QEDWOd//EABsQAQADAAMBAAAAAAAAAAAAAAEAESFBUXEx/9oACAEBAAE/EKE0OGx3DZHIT69h891ZVO6hU1bWr3AwwENKOMKgGVKUDhnyf//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Drawings&quot;
+        title=&quot;Drawings&quot;
+        src=&quot;/static/181d942712f4df4c2053eeda5ff2f578/828fb/presentation.jpg&quot;
+        srcset=&quot;/static/181d942712f4df4c2053eeda5ff2f578/ff44c/presentation.jpg 158w,
+/static/181d942712f4df4c2053eeda5ff2f578/a6688/presentation.jpg 315w,
+/static/181d942712f4df4c2053eeda5ff2f578/828fb/presentation.jpg 630w,
+/static/181d942712f4df4c2053eeda5ff2f578/0ede0/presentation.jpg 945w,
+/static/181d942712f4df4c2053eeda5ff2f578/3ac88/presentation.jpg 1260w,
+/static/181d942712f4df4c2053eeda5ff2f578/a3429/presentation.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Getting ready for the pitch
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/5bac55ca54e64affbcaba6f8397c6a23/a3429/drawings.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAQFAgP/xAAVAQEBAAAAAAAAAAAAAAAAAAABAP/aAAwDAQACEAMQAAABw9HdSWcAv//EABsQAAMAAgMAAAAAAAAAAAAAAAECAwARFCEi/9oACAEBAAEFAooDjorIx7nQzPJ8k7P/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAbEAACAQUAAAAAAAAAAAAAAAAAIQECEBEiQf/aAAgBAQAGPwJxqKl8tglMk//EABoQAQADAQEBAAAAAAAAAAAAAAEAETFBIVH/2gAIAQEAAT8hTHBGB4DES5lTqp8YEsZzGVes/9oADAMBAAIAAwAAABCL/wD/xAAVEQEBAAAAAAAAAAAAAAAAAAABEP/aAAgBAwEBPxBn/8QAFhEBAQEAAAAAAAAAAAAAAAAAEQEQ/9oACAECAQE/EIGf/8QAGxABAQEAAgMAAAAAAAAAAAAAAREAITFRccH/2gAIAQEAAT8Q6IZAe0xYa44PrBdzUj3kI5mnxTEsHJaXLFKivnf/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Drawings&quot;
+        title=&quot;Drawings&quot;
+        src=&quot;/static/5bac55ca54e64affbcaba6f8397c6a23/828fb/drawings.jpg&quot;
+        srcset=&quot;/static/5bac55ca54e64affbcaba6f8397c6a23/ff44c/drawings.jpg 158w,
+/static/5bac55ca54e64affbcaba6f8397c6a23/a6688/drawings.jpg 315w,
+/static/5bac55ca54e64affbcaba6f8397c6a23/828fb/drawings.jpg 630w,
+/static/5bac55ca54e64affbcaba6f8397c6a23/0ede0/drawings.jpg 945w,
+/static/5bac55ca54e64affbcaba6f8397c6a23/3ac88/drawings.jpg 1260w,
+/static/5bac55ca54e64affbcaba6f8397c6a23/a3429/drawings.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The pitch is ready and looks promising
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/1a1215e63b80d6f57fe6c88a617e4e3b/a3429/pitch.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMFAv/EABQBAQAAAAAAAAAAAAAAAAAAAAH/2gAMAwEAAhADEAAAAXbksGqRxP/EABwQAAICAgMAAAAAAAAAAAAAAAECAAMREhMUQf/aAAgBAQABBQJb6weZc9kTx9EgTI//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPwFH/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAGhAAAgIDAAAAAAAAAAAAAAAAAAExQRAREv/aAAgBAQAGPwKWx4XNSW2bP//EABkQAAMBAQEAAAAAAAAAAAAAAAABESFBYf/aAAgBAQABPyFDngKyVb0xXDeBcMIo8BJZyn//2gAMAwEAAgADAAAAEADP/8QAFhEBAQEAAAAAAAAAAAAAAAAAARAR/9oACAEDAQE/EMGP/8QAFREBAQAAAAAAAAAAAAAAAAAAEQD/2gAIAQIBAT8QSb//xAAeEAEBAAICAgMAAAAAAAAAAAABEQAhMUFRgaHB0f/aAAgBAQABPxAWhw2eX11lhUSrWAecCZtFO78YBPcCgR75c0cnRe7+TEIYUNuvrP/Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Pitch&quot;
+        title=&quot;Pitch&quot;
+        src=&quot;/static/1a1215e63b80d6f57fe6c88a617e4e3b/828fb/pitch.jpg&quot;
+        srcset=&quot;/static/1a1215e63b80d6f57fe6c88a617e4e3b/ff44c/pitch.jpg 158w,
+/static/1a1215e63b80d6f57fe6c88a617e4e3b/a6688/pitch.jpg 315w,
+/static/1a1215e63b80d6f57fe6c88a617e4e3b/828fb/pitch.jpg 630w,
+/static/1a1215e63b80d6f57fe6c88a617e4e3b/0ede0/pitch.jpg 945w,
+/static/1a1215e63b80d6f57fe6c88a617e4e3b/3ac88/pitch.jpg 1260w,
+/static/1a1215e63b80d6f57fe6c88a617e4e3b/a3429/pitch.jpg 4160w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;In the meantime&lt;/h2&gt;
+&lt;p&gt;We found ParkNow advertisement (ParkNow is our brand in Germany)
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/ca1299cecc33ed0da656fd9414b45c6d/45687/parknow.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.31645569620254%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAQFAf/EABUBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIQAxAAAAGdVjOAsaTf/8QAGxABAAICAwAAAAAAAAAAAAAAAQACAxIEITH/2gAIAQEAAQUCKDHDx6y+M2Dva0ff/8QAFhEBAQEAAAAAAAAAAAAAAAAAABES/9oACAEDAQE/Aco//8QAFREBAQAAAAAAAAAAAAAAAAAAABH/2gAIAQIBAT8Bqv/EABwQAAICAgMAAAAAAAAAAAAAAAABETESoSEyQf/aAAgBAQAGPwJJ+Wc7HjRMnbRZ/8QAGxABAAICAwAAAAAAAAAAAAAAAQBBESExcdH/2gAIAQEAAT8hR7gM5EZxZlqUZrZRJq8I1baf/9oADAMBAAIAAwAAABAwL//EABYRAQEBAAAAAAAAAAAAAAAAAAEAQf/aAAgBAwEBPxBeMC//xAAXEQEBAQEAAAAAAAAAAAAAAAABABEx/9oACAECAQE/EAHbV//EABwQAQEAAgIDAAAAAAAAAAAAAAERACExQVFhcf/aAAgBAQABPxCJScSeXW+9PWIzQGIfsM80+ilyRFVEz2U4HB8Oqupn/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;ParkNow&quot;
+        title=&quot;ParkNow&quot;
+        src=&quot;/static/ca1299cecc33ed0da656fd9414b45c6d/828fb/parknow.jpg&quot;
+        srcset=&quot;/static/ca1299cecc33ed0da656fd9414b45c6d/ff44c/parknow.jpg 158w,
+/static/ca1299cecc33ed0da656fd9414b45c6d/a6688/parknow.jpg 315w,
+/static/ca1299cecc33ed0da656fd9414b45c6d/828fb/parknow.jpg 630w,
+/static/ca1299cecc33ed0da656fd9414b45c6d/0ede0/parknow.jpg 945w,
+/static/ca1299cecc33ed0da656fd9414b45c6d/3ac88/parknow.jpg 1260w,
+/static/ca1299cecc33ed0da656fd9414b45c6d/45687/parknow.jpg 1262w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;And this strange guy in front of The Berlin Wall
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/15ce76371815094cebd9d8578ba0bd53/8bac5/lol.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 133.54430379746836%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAbABQDASIAAhEBAxEB/8QAGQAAAwADAAAAAAAAAAAAAAAAAAIDAQQF/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIQAxAAAAGLzUcBLaPVzNQJCf/EABwQAAIDAQADAAAAAAAAAAAAAAECAAMREhAxQf/aAAgBAQABBQIrzPnqWbyG8WYYNQmljDWvRUGOMb//xAAUEQEAAAAAAAAAAAAAAAAAAAAg/9oACAEDAQE/AR//xAAUEQEAAAAAAAAAAAAAAAAAAAAg/9oACAECAQE/AR//xAAdEAACAgIDAQAAAAAAAAAAAAAAAREhAhIQIkFR/9oACAEBAAY/AqqfnOJBbKbleM7UxaPGDbVSWUf/xAAeEAEAAwABBQEAAAAAAAAAAAABABEhMUFRYXGhsf/aAAgBAQABPyEdU0s9pVPi+5MAeJUGjb+xLcMxBAsl6rDiZDQH15l6xjljbEfWElLh1YJ//9oADAMBAAIAAwAAABBjOg7/xAAXEQEBAQEAAAAAAAAAAAAAAAARAAEh/9oACAEDAQE/EDjGxF//xAAWEQEBAQAAAAAAAAAAAAAAAAAAESH/2gAIAQIBAT8Quqqv/8QAHhABAQACAgIDAAAAAAAAAAAAAREAITFBUZGhweH/2gAIAQEAAT8QCkBAkNcPLiJwJhOh2fuIKoNBhVAzjpwhwikeJB1lRvoF6NfWJkZigl6Hn1rLUKxUAAi/OV3EryIbc7MAZXCw42XIQWBguf/Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Strange guy&quot;
+        title=&quot;Strange guy&quot;
+        src=&quot;/static/15ce76371815094cebd9d8578ba0bd53/828fb/lol.jpg&quot;
+        srcset=&quot;/static/15ce76371815094cebd9d8578ba0bd53/ff44c/lol.jpg 158w,
+/static/15ce76371815094cebd9d8578ba0bd53/a6688/lol.jpg 315w,
+/static/15ce76371815094cebd9d8578ba0bd53/828fb/lol.jpg 630w,
+/static/15ce76371815094cebd9d8578ba0bd53/8bac5/lol.jpg 673w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;And the bike sharing services. Lime E-bike vs orange city bike
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/fb9efb9086535af163e86ea9c5f417b8/9888a/bikesharing.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABAAC/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIQAxAAAAEjQqyzYq//xAAdEAACAgEFAAAAAAAAAAAAAAABAwACIQQREhMx/9oACAEBAAEFAsxTbKOpPY3HOvpO0//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8BP//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8BP//EABsQAAIBBQAAAAAAAAAAAAAAAAARAhASITFh/9oACAEBAAY/AuitwOOhqiP/xAAaEAADAQEBAQAAAAAAAAAAAAABESEAUUFh/9oACAEBAAE/IYUaS58uRxT+VDTwifcRs8z7U7//2gAMAwEAAgADAAAAEG8f/8QAFREBAQAAAAAAAAAAAAAAAAAAEBH/2gAIAQMBAT8Qh//EABYRAQEBAAAAAAAAAAAAAAAAAAAxEf/aAAgBAgEBPxCRr//EAB4QAQABBAIDAAAAAAAAAAAAAAERACExQXGBkaHx/9oACAEBAAE/EBQbgAv1xUjQ6m4xJSgKA0ZjfmaEphMNbKc/aUoJEW1x6oLKWVmv/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Bike sharing&quot;
+        title=&quot;Bike sharing&quot;
+        src=&quot;/static/fb9efb9086535af163e86ea9c5f417b8/828fb/bikesharing.jpg&quot;
+        srcset=&quot;/static/fb9efb9086535af163e86ea9c5f417b8/ff44c/bikesharing.jpg 158w,
+/static/fb9efb9086535af163e86ea9c5f417b8/a6688/bikesharing.jpg 315w,
+/static/fb9efb9086535af163e86ea9c5f417b8/828fb/bikesharing.jpg 630w,
+/static/fb9efb9086535af163e86ea9c5f417b8/0ede0/bikesharing.jpg 945w,
+/static/fb9efb9086535af163e86ea9c5f417b8/9888a/bikesharing.jpg 1198w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Oh, look at this! There is Mercedes A-class from Car2Go
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b395e135abb4189507edc57d3f2acfd9/9888a/car2go.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAIEBf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/9oADAMBAAIQAxAAAAGK3NeRikP/xAAYEAADAQEAAAAAAAAAAAAAAAAAAQIDEf/aAAgBAQABBQJQicrRWVp9I0uW9qP/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAdEAACAQQDAAAAAAAAAAAAAAAAAQIDEBExITKB/9oACAEBAAY/AtmaUjmLtt4O7Xp//8QAHRAAAgEEAwAAAAAAAAAAAAAAAREAITFBYXGR8P/aAAgBAQABPyHMdXEq8BOIa1fDgaITi3aP+zqf/9oADAMBAAIAAwAAABBk7//EABURAQEAAAAAAAAAAAAAAAAAAAAR/9oACAEDAQE/EEf/xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAIAQIBAT8QEtL/xAAeEAEBAAEDBQAAAAAAAAAAAAABEQAhQXExUWGBsf/aAAgBAQABPxC8qtwCcd8NQTFIM5wae2qa3syV63ZzWYGhZXh2wgtBYp+Y/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Bike sharing&quot;
+        title=&quot;Bike sharing&quot;
+        src=&quot;/static/b395e135abb4189507edc57d3f2acfd9/828fb/car2go.jpg&quot;
+        srcset=&quot;/static/b395e135abb4189507edc57d3f2acfd9/ff44c/car2go.jpg 158w,
+/static/b395e135abb4189507edc57d3f2acfd9/a6688/car2go.jpg 315w,
+/static/b395e135abb4189507edc57d3f2acfd9/828fb/car2go.jpg 630w,
+/static/b395e135abb4189507edc57d3f2acfd9/0ede0/car2go.jpg 945w,
+/static/b395e135abb4189507edc57d3f2acfd9/9888a/car2go.jpg 1198w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Or better this GLA-class? Certainly we tried both :)
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/318b4a1b0280edccd490e4ad533e2f30/a42c7/car2go2.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABQACBP/EABUBAQEAAAAAAAAAAAAAAAAAAAAC/9oADAMBAAIQAxAAAAHjaB3JmAj/xAAZEAADAQEBAAAAAAAAAAAAAAAAAQIDERP/2gAIAQEAAQUCnNmSay9IQqFbldP/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPwGq/8QAGxAAAgIDAQAAAAAAAAAAAAAAAAECEhAhcRH/2gAIAQEABj8CTsVnvpqUUcH5j//EABsQAQACAwEBAAAAAAAAAAAAAAEAIRExUXGh/9oACAEBAAE/IWHwGoTzeWyagnJlAuDhU9u4rM//2gAMAwEAAgADAAAAEKgP/8QAFREBAQAAAAAAAAAAAAAAAAAAABH/2gAIAQMBAT8QV//EABURAQEAAAAAAAAAAAAAAAAAAAEQ/9oACAECAQE/EAR//8QAHBABAQACAwEBAAAAAAAAAAAAAREAITFBUaGx/9oACAEBAAE/EDZNNsK36/mAjC10dBvFk94MJ9wQlRC9VuXm7EuPR47zhlz/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Bike sharing&quot;
+        title=&quot;Bike sharing&quot;
+        src=&quot;/static/318b4a1b0280edccd490e4ad533e2f30/828fb/car2go2.jpg&quot;
+        srcset=&quot;/static/318b4a1b0280edccd490e4ad533e2f30/ff44c/car2go2.jpg 158w,
+/static/318b4a1b0280edccd490e4ad533e2f30/a6688/car2go2.jpg 315w,
+/static/318b4a1b0280edccd490e4ad533e2f30/828fb/car2go2.jpg 630w,
+/static/318b4a1b0280edccd490e4ad533e2f30/0ede0/car2go2.jpg 945w,
+/static/318b4a1b0280edccd490e4ad533e2f30/3ac88/car2go2.jpg 1260w,
+/static/318b4a1b0280edccd490e4ad533e2f30/a42c7/car2go2.jpg 1263w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;Back to Pitch&lt;/h2&gt;
+&lt;p&gt;Let the fun begin! Zahy is on fire
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/e5b0e9f8ec20f504076a867de2e2d610/8e1fc/pitchpresenting.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 66.45569620253164%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAANABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAQCAwX/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEAMQAAABi1nX08Lkf//EABsQAAMAAgMAAAAAAAAAAAAAAAECAwARBBIj/9oACAEBAAEFAmo4c0RMge00G7UPjxRqP//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8BP//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8BP//EAB0QAAICAQUAAAAAAAAAAAAAAAABESECAyJBYWL/2gAIAQEABj8Ce7kluKJ7ZqTcMyXkVn//xAAcEAEAAwACAwAAAAAAAAAAAAABABEhMUFRsdH/2gAIAQEAAT8hP6VioggRwhU+/ZAJ4iYIo+pgkXs//9oADAMBAAIAAwAAABDwz//EABURAQEAAAAAAAAAAAAAAAAAABAh/9oACAEDAQE/EIf/xAAWEQEBAQAAAAAAAAAAAAAAAAABERD/2gAIAQIBAT8QWzP/xAAcEAEAAgMAAwAAAAAAAAAAAAABABEhMVFhcfD/2gAIAQEAAT8QMJmixVc8QVQcxu7cQUtjvWU0glWs28ncAAcasVJDUHfif//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Zahy team&quot;
+        title=&quot;Zahy team&quot;
+        src=&quot;/static/e5b0e9f8ec20f504076a867de2e2d610/828fb/pitchpresenting.jpg&quot;
+        srcset=&quot;/static/e5b0e9f8ec20f504076a867de2e2d610/ff44c/pitchpresenting.jpg 158w,
+/static/e5b0e9f8ec20f504076a867de2e2d610/a6688/pitchpresenting.jpg 315w,
+/static/e5b0e9f8ec20f504076a867de2e2d610/828fb/pitchpresenting.jpg 630w,
+/static/e5b0e9f8ec20f504076a867de2e2d610/8e1fc/pitchpresenting.jpg 900w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Lucas is invisible. There is his team is presenting
+&lt;img src=&quot;./images/lucasteam.jpg&quot; alt=&quot;Lucas team&quot;&gt;&lt;/p&gt;
+&lt;p&gt;And here is my team presenting
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/f7faacaede7bde92bf127260fe701526/e92da/haas.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 56.32911392405063%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAEDAgX/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEAMQAAAB3LnOGSF//8QAGRAAAwEBAQAAAAAAAAAAAAAAAQISAAMR/9oACAEBAAEFAj2sI7ZgxNGPdR3/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/AT//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAECAQE/AT//xAAbEAACAgMBAAAAAAAAAAAAAAAAAQIhESIxYf/aAAgBAQAGPwLaKtYIeplkXm+COn//xAAcEAACAgIDAAAAAAAAAAAAAAABEQAhMVFBYaH/2gAIAQEAAT8hvgDmbuICUHCVGl32YsOzxCSvxDtT/9oADAMBAAIAAwAAABAvL//EABYRAAMAAAAAAAAAAAAAAAAAAAEQIf/aAAgBAwEBPxARf//EABYRAQEBAAAAAAAAAAAAAAAAAAEAEf/aAAgBAgEBPxCXW//EABoQAQADAQEBAAAAAAAAAAAAAAEAESExQVH/2gAIAQEAAT8QIUJDuh0Z7kAAVJBEMI2a8OFuRXyhS6UUCuR7WxVUYi8Ps//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Haas team&quot;
+        title=&quot;Haas team&quot;
+        src=&quot;/static/f7faacaede7bde92bf127260fe701526/828fb/haas.jpg&quot;
+        srcset=&quot;/static/f7faacaede7bde92bf127260fe701526/ff44c/haas.jpg 158w,
+/static/f7faacaede7bde92bf127260fe701526/a6688/haas.jpg 315w,
+/static/f7faacaede7bde92bf127260fe701526/828fb/haas.jpg 630w,
+/static/f7faacaede7bde92bf127260fe701526/0ede0/haas.jpg 945w,
+/static/f7faacaede7bde92bf127260fe701526/3ac88/haas.jpg 1260w,
+/static/f7faacaede7bde92bf127260fe701526/e92da/haas.jpg 1597w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Done. Jury is deciding
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/8481147a63abd2e774c7584305d9a174/8e1fc/jury.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 66.45569620253164%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAANABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMFBP/EABUBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIQAxAAAAFromgaROJn/8QAGRAAAgMBAAAAAAAAAAAAAAAAABMBAhEh/9oACAEBAAEFAm6MqMqMnX2J6f/EABURAQEAAAAAAAAAAAAAAAAAAAAR/9oACAEDAQE/AVf/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEv/aAAgBAgEBPwFT/8QAGxAAAgEFAAAAAAAAAAAAAAAAAAExEBFioeH/2gAIAQEABj8CSaOE6HjAr0//xAAbEAACAwEBAQAAAAAAAAAAAAABEQAhMVFBYf/aAAgBAQABPyHkRNxrAJUL9wb7aFyAORXyWPHP/9oADAMBAAIAAwAAABC4/wD/xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/EB//xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAIAQIBAT8QAsF//8QAGxABAQEBAAMBAAAAAAAAAAAAAREhADFBkWH/2gAIAQEAAT8QtBzU2S5jvCYQuj+8siz7hz6d4kUyfovQYMj4DXoU0alc7//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Jury&quot;
+        title=&quot;Jury&quot;
+        src=&quot;/static/8481147a63abd2e774c7584305d9a174/828fb/jury.jpg&quot;
+        srcset=&quot;/static/8481147a63abd2e774c7584305d9a174/ff44c/jury.jpg 158w,
+/static/8481147a63abd2e774c7584305d9a174/a6688/jury.jpg 315w,
+/static/8481147a63abd2e774c7584305d9a174/828fb/jury.jpg 630w,
+/static/8481147a63abd2e774c7584305d9a174/8e1fc/jury.jpg 900w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Ah, and the sweaty winners. They worked hard
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/657090da07887c6213bff139dec04a32/8e1fc/winners.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 66.45569620253164%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAANABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMEBf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/9oADAMBAAIQAxAAAAGlET60TKI//8QAHBABAAIBBQAAAAAAAAAAAAAAAQADAgQRISIj/9oACAEBAAEFAm/kyshYzM9DUO1D0//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8BP//EABYRAQEBAAAAAAAAAAAAAAAAAAABEf/aAAgBAgEBPwGMf//EABwQAAICAgMAAAAAAAAAAAAAAAABAhEhMTJRgf/aAAgBAQAGPwJpF28GiXSOMT0//8QAHBAAAwACAwEAAAAAAAAAAAAAAAERIUExYZFx/9oACAEBAAE/IcVWdejellKPp2o+Vssn4I8yH2P/2gAMAwEAAgADAAAAEODf/8QAFxEAAwEAAAAAAAAAAAAAAAAAAAERMf/aAAgBAwEBPxBx6VH/xAAWEQADAAAAAAAAAAAAAAAAAAAAASH/2gAIAQIBAT8QlUY//8QAHxABAAEEAQUAAAAAAAAAAAAAAREAITFBUWFxgZGx/9oACAEBAAE/ECFEXrtnjFKISBAMnaPFGg2Egm0l+tEIpAy4tUTuBIJquYXfCv/Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Winners&quot;
+        title=&quot;Winners&quot;
+        src=&quot;/static/657090da07887c6213bff139dec04a32/828fb/winners.jpg&quot;
+        srcset=&quot;/static/657090da07887c6213bff139dec04a32/ff44c/winners.jpg 158w,
+/static/657090da07887c6213bff139dec04a32/a6688/winners.jpg 315w,
+/static/657090da07887c6213bff139dec04a32/828fb/winners.jpg 630w,
+/static/657090da07887c6213bff139dec04a32/8e1fc/winners.jpg 900w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;It was great event and a lot of fun. We’ve gained great experience and made new connections, especially guys from IBM and ING.&lt;/p&gt;
+&lt;p&gt;Time to go home
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/98b0f8493c101b8a3273a50a9ef016d6/9888a/home.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABAACBf/EABUBAQEAAAAAAAAAAAAAAAAAAAEA/9oADAMBAAIQAxAAAAHCeM5Gwov/xAAbEAACAgMBAAAAAAAAAAAAAAABAgADEBITIf/aAAgBAQABBQJbajBzOK6i01VIT7//xAAVEQEBAAAAAAAAAAAAAAAAAAAQEf/aAAgBAwEBPwGH/8QAFhEBAQEAAAAAAAAAAAAAAAAAABES/9oACAECAQE/AdK//8QAGxAAAwACAwAAAAAAAAAAAAAAAAERAiEQMTL/2gAIAQEABj8C7hrJHuFb0RLj/8QAGxAAAwACAwAAAAAAAAAAAAAAAAERUYEhMUH/2gAIAQEAAT8hmXYN25jci1CDhWZM9ZiI/9oADAMBAAIAAwAAABBY/wD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPxCUf//EABURAQEAAAAAAAAAAAAAAAAAAAAR/9oACAECAQE/ELU//8QAHRABAQACAgMBAAAAAAAAAAAAAREAIVFxMUFh0f/aAAgBAQABPxCZRMoLHvI5wy4Bh09j9xe3UUarxMJx7g23q5KKwPJ8z//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Back home&quot;
+        title=&quot;Back home&quot;
+        src=&quot;/static/98b0f8493c101b8a3273a50a9ef016d6/828fb/home.jpg&quot;
+        srcset=&quot;/static/98b0f8493c101b8a3273a50a9ef016d6/ff44c/home.jpg 158w,
+/static/98b0f8493c101b8a3273a50a9ef016d6/a6688/home.jpg 315w,
+/static/98b0f8493c101b8a3273a50a9ef016d6/828fb/home.jpg 630w,
+/static/98b0f8493c101b8a3273a50a9ef016d6/0ede0/home.jpg 945w,
+/static/98b0f8493c101b8a3273a50a9ef016d6/9888a/home.jpg 1198w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Tired but happy!
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 630px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/06dc241aeb134979dd0df4ec69f30a19/9888a/back.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 74.68354430379746%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAIBAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAACAAH/2gAMAwEAAhADEAAAAUWALWWFn//EABkQAQADAQEAAAAAAAAAAAAAAAIAAQMREv/aAAgBAQABBQJlwW4ddvI0trXlbFLn/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEx/9oACAEDAQE/AcV//8QAFhEBAQEAAAAAAAAAAAAAAAAAAQAR/9oACAECAQE/AUGy/8QAHBAAAgICAwAAAAAAAAAAAAAAAAECESGhMkGB/9oACAEBAAY/Ar6HSXphaIxnlFZOej//xAAaEAEAAwEBAQAAAAAAAAAAAAABABExUSFB/9oACAEBAAE/ITHbsCHFbT5KDCNoLJUBC7FZFeT/AP/aAAwDAQACAAMAAAAQnA//xAAXEQADAQAAAAAAAAAAAAAAAAAAAREh/9oACAEDAQE/ENWFH//EABURAQEAAAAAAAAAAAAAAAAAAAEQ/9oACAECAQE/EEJ//8QAHRAAAgICAwEAAAAAAAAAAAAAAREAIUFxMVFhgf/aAAgBAQABPxA2QAgopUoqXDsIKkpSCDRSaZX7qGI4huVr5UGmTgAtZn//2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Back home&quot;
+        title=&quot;Back home&quot;
+        src=&quot;/static/06dc241aeb134979dd0df4ec69f30a19/828fb/back.jpg&quot;
+        srcset=&quot;/static/06dc241aeb134979dd0df4ec69f30a19/ff44c/back.jpg 158w,
+/static/06dc241aeb134979dd0df4ec69f30a19/a6688/back.jpg 315w,
+/static/06dc241aeb134979dd0df4ec69f30a19/828fb/back.jpg 630w,
+/static/06dc241aeb134979dd0df4ec69f30a19/0ede0/back.jpg 945w,
+/static/06dc241aeb134979dd0df4ec69f30a19/9888a/back.jpg 1198w&quot;
+        sizes=&quot;(max-width: 630px) 100vw, 630px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+        decoding=&quot;async&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Weird Javascript: Buzzy statement]]></title><description><![CDATA[Buzzy statement Once I came across this weird statement written in Javascript: Being sure that I am pretty good in Javascript, I was trying…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/javascript-buzzy/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/javascript-buzzy/</guid><pubDate>Fri, 10 Feb 2017 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;Buzzy statement&lt;/h2&gt;
+&lt;p&gt;Once I came across this weird statement written in Javascript:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Being sure that I am pretty good in Javascript, I was trying to figure out whether or not this weird statement is valid. If so, what is the result?&lt;/p&gt;
+&lt;p&gt;Let’s sort it out together. In order to decode the statement we should split it into the parts. At first glance, you would split it on four groups as following:&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;++[[]][&lt;/span&gt; + &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;[]]&lt;/span&gt; + &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt; [&lt;/span&gt; + &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt; []] &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;However, the correct break-down would be two groups as follows:&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;++[[]][+[]]&lt;/span&gt; + &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;[+[]]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;The statement consists of two parts: leftmost and righmost. Now, the easiest part to analyze is the rightmost. Let’s have a look closer. We are dealing with one-element array declared in a literal way, check this out:&lt;/p&gt;
+&lt;p&gt;[&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;+[]&lt;/span&gt;] == [&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;x&lt;/span&gt;] == new Array(x)&lt;/p&gt;
+&lt;p&gt;And how to explain this statement inside the array:&lt;/p&gt;
+&lt;p&gt;+[]&lt;/p&gt;
+&lt;p&gt;The main hint here is the operator +. A statement written in such way is interpreted by JavaScript as a number, because + acts as unary operator:&lt;/p&gt;
+&lt;p&gt;+[] == Number([])&lt;/p&gt;
+&lt;p&gt;Outputting this via alert() function get us 0, i.e. converting an empty array to a number returns 0. Here is how the function Number() works:&lt;/p&gt;
+&lt;p&gt;Attempts to convert an array to Javascript primitive type by calling internal toPrimitive() function
+In turn, toPrimitive function triggers valueOf() function. If result is primitive, return it
+Otherwise, calls toString() function. Return primitive (if any)
+Apply toNumber() to the result
+Simply, [].valueOf() returns the array itself. Then the call [].toString() is made, which returns an empty string which, in turn is converted to 0 by calling ToNumber() internal function. So that the rightmost part can be re-written as follows:&lt;/p&gt;
+&lt;p&gt;[&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;+[]&lt;/span&gt;] == [&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;0&lt;/span&gt;]&lt;/p&gt;
+&lt;p&gt;Now, the process is pretty similar to what we have already seen and we do know that the result of this single statement is also 0*. Let’s take a look at the leftmost part of the statement and pay attention to its rightmost part. The statement can be transformed as this:&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;background-color: #ff6a35; color:#fff&quot;&gt;++[[]] &lt;/span&gt; &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;[+[]]&lt;/span&gt; + &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;[+[]]&lt;/span&gt; == &lt;span style=&quot;background-color: #ff6a35; color:#fff&quot;&gt;++[[]] &lt;/span&gt; &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;[0]&lt;/span&gt; + &lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;[0]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Surprisingly, here we are dealing with an array, yet again. Bear in mind that an empty array is converted to empty string or to the 0 when conversion to number takes place. Leftmost part of the statement is really simple now:&lt;/p&gt;
+&lt;p&gt;++[&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;[]&lt;/span&gt;][0] == ++[&lt;span style=&quot;background-color: #3598ff; color:#fff&quot;&gt;&quot;&quot;&lt;/span&gt;][0]&lt;/p&gt;
+&lt;p&gt;See? This is an array with an empty string where the indexing is applied, i.e. an element with 0 index is retrieved. Then the result is incremented by 1, which in turn causes its conversion to the number:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Huray, here is the final statement:&lt;/p&gt;
+&lt;p&gt;++[[]][+[]] + [+[]] == ++0 + [0] == 1 + 0 == 10&lt;/p&gt;
+&lt;p&gt;Huh?? Ok, what’s going on now? I am sure you did notice the * somewhere above. The righmost part was evaluated to 0, even more - to “0”, which is a string. Hence we saw the string concantenation rather than numerical sum.&lt;/p&gt;
+&lt;p&gt;And as a bonus, can you explain the following results?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;++[[1],[2]][+[]] = 2&lt;/li&gt;
+&lt;li&gt;[1,2]+[3] = [1,23]&lt;/li&gt;
+&lt;li&gt;(1,1,1)+(1,1,1)+(1,1,1) = 3&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[6 points on taking maximum from BETA testing]]></title><description><![CDATA[You have developed a perfect app (or service). Before releasing and starting a marketing campaign you want to gether an initial feedback…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/beta-testing/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/beta-testing/</guid><pubDate>Sat, 08 Dec 2012 13:22:00 GMT</pubDate><content:encoded>&lt;p&gt;You have developed a perfect app (or service). Before releasing and starting a marketing campaign you want to gether an initial feedback from potential users and make final fixes and adjustments. &lt;strong&gt;How to make it efficiently?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Here I would like to share my experience with BETA testing process. During the process I managed to get lots of information regarding the usability of UI, bugs, attractiveness, willingness to buy the app, possible enhancements, suggestions about new functionality and other useful info. Below you’ll find 6 key points that I’ve learned.&lt;/p&gt;
+&lt;h2&gt;1 You need as many BETA testers as possible.&lt;/h2&gt;
+&lt;p&gt;Think a dozen is enough? Be realistic, you can not judge on opinion of a small set of people. Therefore in order to get a clear view of strong and weak points of your app you need to get as many BETA testers as possible.&lt;/p&gt;
+&lt;p&gt;Another reason is that you are interested in getting a feedback from your BETA testers, but the truth is that according to my experience:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;not all the brave guys who prommised to test your app will download it&lt;/li&gt;
+&lt;li&gt;not all of those who downloaded it will give you a feedback.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;2 Start searching for BETA testers as soon as possible.&lt;/h2&gt;
+&lt;p&gt;Start earlier to get more testers. Only when you start to look for the BETA testers in advance you can get many feedbacks from them in time.&lt;/p&gt;
+&lt;h2&gt;3 Attract BETA testers.&lt;/h2&gt;
+&lt;p&gt;Use the curiosity of BETA testers - wake up their interest! Show them something! It could be screenshots of your app or a short movie on YouTube demonstrating attractive aspects of your app &lt;a href=&quot;https://www.youtube.com/watch?v=B-32EjIHyDA&quot;&gt;Here is my movie as an example&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;4 Publish your BETA as soon as possible&lt;/h2&gt;
+&lt;p&gt;Publish your BETA once it is ready. Don’t make the testers wait too long - they can lose the interest. Don’t be afraid that you don’t have enough testers - you can add them whenever you get them.&lt;/p&gt;
+&lt;h2&gt;5 Create a survey! Make the process of providing a feedback as easy as possible.&lt;/h2&gt;
+&lt;p&gt;People are lazy in a nature. It takes a lot of effort for the BETA testers to sit and write down anything in a free form, on the other hand it is quite easy to fill in a survey. Create a survey! Include important questions and don’t make it  too long - no more than 20 questions. You as a developer want to get valuable and actioable feedback. Right? Then simply ask your testers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Is the UI intuitive and simple to use?&lt;/li&gt;
+&lt;li&gt;What can be improved?&lt;/li&gt;
+&lt;li&gt;Would you pay $X for it?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There are free services which allow you to create a survey for free, just google for them. I used &lt;a href=&quot;http://fluidsurveys.com/&quot;&gt;FluidSurveys&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;6 Don’t wait - ask!&lt;/h2&gt;
+&lt;p&gt;Only 1 out of 10 BETA testers will provide you a feedback. Don’t hesitate to ask providing you with the feedback after some periode of time. Send them a link to your survey and ask to fill it out mentioning that it wouldn’t take much time but will help you a lot.&lt;/p&gt;
+&lt;p&gt;After you performed all these steps you can lean back and analyze the feedback you got. Take into account suggestions, fix bugs, improve UI and release your amazing app!&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Do not lie to your user]]></title><description><![CDATA[Your app or service is ready to be released. Time to attract users - but how? What do you tell them about your masterpiece while temptation…]]></description><link>https://gatsbystarterblogsource.gatsbyjs.io/dont-lie-to-user/</link><guid isPermaLink="false">https://gatsbystarterblogsource.gatsbyjs.io/dont-lie-to-user/</guid><pubDate>Sun, 05 Aug 2012 10:45:00 GMT</pubDate><content:encoded>&lt;p&gt;Your app or service is ready to be released. Time to attract users - but how? What do you tell them about your masterpiece while temptation to praise it to the skies is high? Only positive aspects?&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Please don’t lie to me, unless you’re absolutely sure I’ll never find out the truth.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Ashleigh Brilliant&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;About three weeks ago I published my first app for the Windows Phone 7 to the Marketplace. The app tries to erase a marked object on the photo in elegant way, so it is hard to notice. The app does its job pretty well in many cases. At the same time, it is impossible to cover all the possible cases and create the magic app that never fails, therefore there are a plenty of cases where the algorithm fails…&lt;/p&gt;
+&lt;p&gt;I didn’t describe in which cases you won’t get a really satisfying results, but I should’ve done that. For someone the app works great and he/she rates app for 5 stars but for someone it didn’t work and he/she rates app for 1 star and writes something not very pleasant.&lt;/p&gt;
+&lt;p&gt;Since the app offers to a user to do some fancy things which he is excited about and then delivers just a mess… it’s no wonder that the user is getting angry.&lt;/p&gt;
+&lt;p&gt;I learned for myself - if an app has some issues, it’s better to tell about it as soon as possible to not disappoint your user.&lt;/p&gt;</content:encoded></item></channel></rss>
