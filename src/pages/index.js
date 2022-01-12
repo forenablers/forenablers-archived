@@ -28,19 +28,8 @@ const BlogIndex = ({ data, location }) => {
       <Seo title="All posts" />
       {/* <Bio /> */}
       <div className="bio">
-      <img
-        className="bio-avatar"
-        layout="fixed"
-        formats={["auto", "webp", "avif"]}
-        src="../images/profile-pic.png"
-        width={50}
-        height={50}
-        quality={95}
-        alt="Profile picture"
-      />
         <p>
           Written by <strong>Sergey Zavoloka</strong> and <strong>Borys Generalov</strong>
-          <a href='https://twitter.com/'>Follow them on Twitter</a>
         </p>
     </div>
 
